@@ -77,7 +77,7 @@ fieldset {
 textarea, input[type="email"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="text"], input[type="url"], input[type="color"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="month"], input[type="time"], input[type="week"], select[multiple=multiple] {
     background-color: var(--inputBg);
     border: 1px solid var(--borderColor);
-    color: var(--textColor);
+    color: var(--bgColor);
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 textarea:hover, input[type="email"]:hover, input[type="number"]:hover, input[type="password"]:hover, input[type="search"]:hover, input[type="tel"]:hover, input[type="text"]:hover, input[type="url"]:hover, input[type="color"]:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[type="datetime-local"]:hover, input[type="month"]:hover, input[type="time"]:hover, input[type="week"]:hover, select[multiple=multiple]:hover {
@@ -96,7 +96,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
 }
 #header a {
     display: inline-block;
-    color: var(--baseColor);
+    color: var(--baseLightColor);
 }
 #header #logo-svg {
     width: 8rem;
@@ -106,6 +106,11 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
 #header #logo-svg path {
     fill: #fff;
 }
+
+#logo {
+    font-weight: bold;
+}
+
 .searchbox {
     margin-top: 1rem;
     position: relative;
@@ -257,7 +262,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
     margin-top: 9px;
 }
 #sidebar ul.topics > li.parent, #sidebar ul.topics > li.active {
-    background: var(--activeBg);
+    background: var(--darkTeal);
     margin-left: -1rem;
     margin-right: -1rem;
     padding-left: 1rem;
@@ -366,6 +371,9 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
     display: inline !important;
     margin: 0 !important;
     vertical-align: bottom;
+    border: 20px solid #000;
+    border-radius: 5px;
+    overflow: hidden;
 }
 #body .bordered {
     border: 1px solid #f0f0f0;
@@ -373,6 +381,12 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
 #body .padding {
     padding: 3rem;
 }
+
+#body.no-sidebar .padding {
+    padding-left: 0;
+    padding-right: 0;
+}
+
 @media only all and (max-width: 59.938em) {
     #body .padding {
         position: static;
@@ -451,7 +465,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
     padding-bottom: 2rem;
 }
 #chapter h3 {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'IBM Plex Sans', sans-serif;
     font-weight: 300;
     color: var(--textColor);
 }
@@ -482,21 +496,21 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
     padding: 0 1rem;
 }
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'IBM Plex Sans', sans-serif;
     font-weight: 300;
     line-height: 1.6;
     font-size: 1rem !important;
 	color: #4D4F5C;
 }
 h2, h3, h4, h5, h6 {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'IBM Plex Sans', sans-serif;
     text-rendering: optimizeLegibility;
     color: var(--textColor);
     font-weight: 400;
     letter-spacing: -1px;
 }
 h1 {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'IBM Plex Sans', sans-serif;
     /* text-transform: uppercase; */
     font-weight: 500;
     font-size: 1.5rem;
@@ -504,11 +518,12 @@ h1 {
 }
 blockquote {
     border-left: 5px solid var(--baseColor);
-    background-color: var(--inputBg);
+    background-color: var(--mint);
     display: inline-block;
     margin: 0;
     padding: 0 20px;
     width: 100%;
+    color: var(--baseColor);
 }
 
 blockquote cite {
@@ -666,15 +681,16 @@ ul.children, ul.children ul {
 }
 
 code, kbd, pre, samp {
-    font-family: 'Ubuntu Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 1rem;
 }
 code {
     white-space: nowrap;
-    color: var(--baseColor);
-    background: rgba(0, 173, 181, 0.1);
+    color: var(--mint);
+    background: var(--darkTeal);
     border-radius: 3px;
-    padding: 0px 2px;
+    padding: 2px 4px 4px;
+    font-size: 90%;
 }
 code + .copy-to-clipboard {
     margin-left: -1px;
@@ -687,14 +703,14 @@ code + .copy-to-clipboard {
 pre {
     padding: 1rem;
     margin: 2rem 0;
-    background: var(--activeBg) !important;
+    background: var(--mint) !important;
     border: 0;
     border-radius: 2px;
     line-height: 1.15;
 }
 pre code {
     color: #f0f0f1;
-    background: var(--activeBg) !important;
+    background: var(--mint) !important;
     white-space: inherit;
     border: 0;
     padding: 0;
@@ -856,7 +872,7 @@ td {
     width: 75px;
     height: 25px;
     position: absolute;
-    left: -59px !important;
+    left: -69px !important;
     top: 3px !important;
     content: "Copied!";
     text-align: center;
@@ -880,7 +896,7 @@ td {
 p .copy-to-clipboard.tooltipped:after {
     left: -22px !important;
     top: -3px !important;
-    font-family: 'Ubuntu Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     padding-top: 0;
 }
 .copy-to-clipboard.tooltipped:before {
@@ -1160,11 +1176,11 @@ p .copy-to-clipboard.tooltipped:after {
 }
 
 .copy-to-clipboard:hover:before, .copy-to-clipboard:hover:after {
-    border-color: var(--baseLightColor);
+    border-color: var(--lGreen);
 }
 
 .copy-to-clipboard:hover:after {
-    background: var(--baseLightColor);
+    background: var(--lGreen);
 }
 
 pre .copy-to-clipboard {
@@ -1208,7 +1224,7 @@ pre .copy-to-clipboard {
 }
 
 #sidebar #shortcuts h3 {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'IBM Plex Sans', sans-serif;
     color: #fff ;
     margin-top:1rem;
     padding-left: 1rem;
