@@ -1,7 +1,7 @@
 ---
 title: "Features"
 weight: 1
-url: /features
+url: features
 description: "Details about PGA's features."
 ---
 

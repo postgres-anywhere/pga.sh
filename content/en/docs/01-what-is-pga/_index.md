@@ -1,7 +1,7 @@
 ---
 title: "What is PGA?"
 weight: 1
-url: /intro
+url: /docs/intro
 description: Details about what PGA is.
 ---
 
@@ -15,7 +15,7 @@ The motivation behind *Postgres Anywhere* (PGA) is to enable engineers to start,
 
 ...
 
-See a detailed list of [PGA features]({{% relref "/01-what-is-pga/01-features" %}}).
+See a detailed list of [PGA features]({{% relref "/docs/01-what-is-pga/01-features" %}}).
 
 ## Principles
 

@@ -95,7 +95,7 @@ Port:       5432
 ```
 
 Of course, you have the ability to change all the default option when creating a cluster via the `pga cluster create` command, and you can also create clusters from infrastructure-as-code definitions via YAML.
-For more information on this, have a look at the [cluster management page]({{% relref "/04-cluster-management/" %}}) or the [create command reference]({{% relref "/05-command-reference/#create-cluster" %}}).
+For more information on this, have a look at the [cluster management page]({{% relref "/docs/04-cluster-management/" %}}) or the [create command reference]({{% relref "/docs/05-command-reference/#create-cluster" %}}).
 
 Now we see that our cluster is running, so let's try to access it.
 
@@ -122,7 +122,7 @@ PGA runs vanilla Postgres without any modifications, so you can access Postgres 
 
 Similarly, you can now point your applications to this Postgres instance (here we're running at the default port `5432`, so that's `localhost:5432`).
 The Postgres superuser is `postgres` with password `postgres`.
-Have a look at the `pga cluster create --help` usage or the [create command reference]({{% relref "/05-command-reference/#create-cluster" %}}) on how to modify these credentials.
+Have a look at the `pga cluster create --help` usage or the [create command reference]({{% relref "/docs/05-command-reference/#create-cluster" %}}) on how to modify these credentials.
 
 ## Stop cluster
 
