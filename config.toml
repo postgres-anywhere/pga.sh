@@ -1,0 +1,62 @@
+baseURL = "/"
+languageCode = "en-US"
+defaultContentLanguage = "en"
+
+title = "PGA Documentation"
+theme = "pga-doc"
+metaDataFormat = "yaml"
+defaultContentLanguageInSubdir = false
+
+[params]
+  description = "Documentation for PGA"
+  author = "Postgres Anywhere"
+  showVisitedLinks = false
+  disableBreadcrumb = false
+  disableNextPrev = true
+  themeVariant = "pga"
+  DisableShortcutsTitle = true
+  isDevVersion = false
+
+[outputs]
+  home = [ "HTML", "RSS", "JSON"]
+
+
+[languages]
+  [languages.en]
+    title = "PGA Documentation"
+    weight = 1
+    languageName = "English"
+    contentDir = "content/en"
+
+    # Footer shortcuts menu
+    [[languages.en.menu.shortcuts]]
+        name = "<i class='fas fa-question-circle'></i> &nbsp;FAQ"
+        identifier = "faq"
+        url = "faq"
+        weight = 10
+
+    [[languages.en.menu.shortcuts]]
+        name = "<i class='fab fa-fw fa-github'></i> GitHub repo"
+        identifier = "ds"
+        url = "https://github.com/postgres-anywhere"
+        weight = 11
+
+    # Main Menu EN
+    [[languages.en.menu.main]]
+        name    = "Documentation"
+        url     = "https://pga.sh/docs/"
+        weight  = 1
+
+    # More EN
+    [[languages.en.menu.more]]
+        name    = "Star on GitHub"
+        url     = "https://github.com/postgres-anywhere"
+        weight  = 1
+    [[languages.en.menu.more]]
+        name    = "Join our Slack"
+        url     = "https://postgresanywhere.slack.com/"
+        weight  = 2
+
+# render raw HTML
+[markup.goldmark.renderer]
+  unsafe = true

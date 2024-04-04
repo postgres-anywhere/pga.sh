@@ -1,0 +1,340 @@
+openapi: 3.0.3
+info:
+  title: PGA CLI API
+  version: 1.0-SNAPSHOT
+
+tags:
+- name: clusters
+  description: PostgreSQL Clusters
+- name: extensions
+  description: PostgreSQL Extensions
+
+paths:
+  /clusters:
+    get:
+      description: List all PostgreSQL clusters
+      tags:
+      - clusters
+      parameters:
+      - name: tag
+        in: query
+        description: Filter clusters containing this tag (provided by key=value strings)
+        example: 'env=prod'
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: List of PostgreSQL clusters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostgresCluster'
+    post:
+      description: Create a PostgreSQL cluster
+      tags:
+      - clusters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostgresCluster'
+      responses:
+        "201":
+          description: Cluster has been created and is starting up
+          headers:
+            location:
+              description: The URL of the created cluster
+              schema:
+                type: string
+        "400":
+          description: Invalid cluster data provided
+          headers:
+            validation-error:
+              description: A message describing which criteria failed the validation
+              schema:
+                type: string
+    delete:
+      description: Delete all PostgreSQL clusters
+      tags:
+      - clusters
+      parameters:
+      - name: tag
+        in: query
+        description: Only delete clusters containing this tag (provided by key=value strings)
+        example: 'env=prod'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: keepPgData
+        description: Doesn't delete the PGDATA directories on the host
+        in: query
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "204":
+          description: All (tagged) clusters have been stopped and deleted
+  /clusters/{name}:
+    get:
+      description: Get a PostgreSQL cluster by name
+      tags:
+      - clusters
+      parameters:
+      - name: name
+        description: The cluster name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: PostgreSQL cluster
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostgresCluster'
+        "404":
+          description: A cluster with the given name doesn't exist
+    delete:
+      description: Delete a PostgreSQL cluster
+      tags:
+      - clusters
+      parameters:
+      - name: name
+        description: The cluster name
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: keepPgData
+        description: Doesn't delete the PGDATA directory on the host
+        in: query
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "204":
+          description: Cluster has been stopped and deleted
+        "404":
+          description: A cluster with the given name doesn't exist
+  /clusters/{name}/exec:
+    post:
+      description: Executes a command in a running PostgreSQL instance (i.e. the container)
+      tags:
+      - clusters
+      parameters:
+      - name: name
+        description: The cluster name
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The command and optional arguments
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+              example:
+              - "bash"
+              - "-c"
+              - "echo"
+              - "hello world"
+      responses:
+        "200":
+          description: The URL of the streaming exec server
+          content:
+            application/json:
+              schema:
+                format: uri
+                type: string
+                example: http://127.0.0.1:23451/exec/7D9a54B
+        "404":
+          description: A cluster with the given name doesn't exist
+  /clusters/{name}/health:
+    get:
+      description: Checks the health of a PostgreSQL cluster
+      tags:
+      - clusters
+      parameters:
+      - name: name
+        description: The cluster name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The PostgreSQL cluster is up and running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClusterHealth'
+        "503":
+          description: The cluster exists but is not running successfully
+        "404":
+          description: A cluster with the given name doesn't exist
+  /clusters/{name}/updates:
+    get:
+      description: Streams updates of a PostgreSQL cluster
+      tags:
+      - clusters
+      parameters:
+      - name: name
+        description: The cluster name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Streaming the cluster updates as server-sent events. The event name represents the type of update event, where the data can contain additional update data.
+          content:
+            text/event-stream:
+              example: |
+                event: VALIDATED
+                data: {"image":"docker.io/library/postgres:16.2"}
+
+                event: IMAGE_PULLED
+                data: {"image":"docker.io/library/postgres:16.2"}
+
+                event: CONTAINER_STARTED
+                data:
+
+                event: CONTAINER_HEALTHY
+                data:
+  /clusters/{name}/logs:
+    get:
+      description: Returns the logs of a PostgreSQL cluster or streams them as server-sent events, depending on the media type specified in the `Accept` header.
+      tags:
+      - clusters
+      parameters:
+      - name: name
+        description: The cluster name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Returns the cluster logs as plain text or as server-sent events (as stream).
+          content:
+            text/plain:
+              example: |
+                [...]
+                2024-03-28T09:51:58.703867007+01:00 stderr F 2024-03-28 08:51:58.703 UTC [7] LOG:  starting PostgreSQL 15.3 (Debian 15.3-1.pgdg120+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit
+                2024-03-28T09:51:58.703875953+01:00 stderr F 2024-03-28 08:51:58.703 UTC [7] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+                2024-03-28T09:51:58.703878158+01:00 stderr F 2024-03-28 08:51:58.703 UTC [7] LOG:  listening on IPv6 address "::", port 5432
+                [...]
+            text/event-stream:
+              example: |
+                [...]
+                data: 2024-03-28T09:51:58.703867007+01:00 stderr F 2024-03-28 08:51:58.703 UTC [7] LOG:  starting PostgreSQL 15.3 (Debian 15.3-1.pgdg120+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit
+
+                data: 2024-03-28T09:51:58.703875953+01:00 stderr F 2024-03-28 08:51:58.703 UTC [7] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+
+                data: 2024-03-28T09:51:58.703878158+01:00 stderr F 2024-03-28 08:51:58.703 UTC [7] LOG:  listening on IPv6 address "::", port 5432
+                [...]
+        "404":
+          description: A cluster with the given name doesn't exist
+  /extensions:
+    get:
+      description: Lists the available PostgreSQL extensions
+      tags:
+      - extensions
+      responses:
+        "200":
+          description: List of PostgreSQL extensions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - pg_repack
+              - uuid-ossp
+              - vector
+components:
+  schemas:
+    PostgresCluster:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The cluster name
+          example: my-cluster
+        flavor:
+          $ref: '#/components/schemas/Flavor'
+        version:
+          type: string
+          description: The PostgreSQL version
+          example: '16.2'
+        port:
+          format: int32
+          type: integer
+          description: The PostgreSQL port
+          example: 5432
+        status:
+          $ref: '#/components/schemas/Status'
+        tags:
+          type: object
+          description: User-provided key/value tags for metadata and filtering
+          additionalProperties:
+            type: string
+          example:
+            app: backend
+            env: prod
+        extensions:
+          type: array
+          description: The added PostgreSQL extensions
+          items:
+            type: string
+          example:
+          - pg_repack
+          - uuid-ossp
+          - vector
+        pgData:
+          type: string
+          description: The host path to mount PGDATA into PostgreSQL
+          example: /tmp/clusters/my-cluster/data
+        username:
+          type: string
+          description: The PostgreSQL superuser
+          example: postgres
+        password:
+          type: string
+          description: The password of the PostgreSQL superuser
+          example: postgres
+    Flavor:
+      enum:
+      - postgres
+      - babelfish
+      description: The PostgreSQL flavor
+      type: string
+      example: postgres
+    Status:
+      enum:
+      - CREATED
+      - RUNNING
+      - STOPPED
+      - UNKNOWN
+      description: The status of the PostgreSQL cluster
+      type: string
+      example: RUNNING
+    ClusterHealth:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The cluster name
+          example: my-cluster
+        status:
+          $ref: '#/components/schemas/Status'
