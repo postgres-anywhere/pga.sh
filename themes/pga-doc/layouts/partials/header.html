@@ -40,7 +40,7 @@
     {{ partial "header-menu.html" . }}
     {{ partial "menu.html" . }}
 
-        <section id="body">
+        <section id="body" {{ if eq .Params.Sidebar false }}class="no-sidebar"{{ end }}>
           <div id="overlay"></div>
           <div class="padding highlightable">
                 {{if not .IsHome}}

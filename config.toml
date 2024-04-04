@@ -16,6 +16,7 @@ defaultContentLanguageInSubdir = false
   themeVariant = "pga"
   DisableShortcutsTitle = true
   isDevVersion = false
+  sidebar = true
 
 [outputs]
   home = [ "HTML", "RSS", "JSON"]
@@ -44,7 +45,7 @@ defaultContentLanguageInSubdir = false
     # Main Menu EN
     [[languages.en.menu.main]]
         name    = "Documentation"
-        url     = "https://pga.sh/docs/"
+        url     = "/docs"
         weight  = 1
 
     # More EN
