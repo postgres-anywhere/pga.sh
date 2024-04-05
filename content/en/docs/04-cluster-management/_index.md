@@ -34,10 +34,10 @@ pga cluster list
 Output:
 
 ```text {.no-copy-to-clipboard}
-Name           Status    Version   Port      
-postgres-15-5  Running   15.5      5430      
-postgres-16-2  Running   16.2      5432      
-postgres-15-6  Running   15.6      5431      
+Name           Node       Primary   Status    Version   Port
+postgres-15-5  archlinux  Primary   Running   15.5      5430
+postgres-15-6  archlinux  Primary   Running   15.6      5431
+postgres-16-2  archlinux  Primary   Running   16.2      5432
 ```
 
 ### Infrastructure as Code
@@ -76,6 +76,8 @@ Output:
 PostgreSQL cluster:
 
 Name:       postgres-16-2
+Host:       archlinux
+Primary:    Primary
 Status:     Running
 Postgres:   16.2
 Flavor:     postgres
@@ -83,6 +85,14 @@ Port:       5432
 ```
 
 Any information that is set at cluster creation time will be shown in the output.
+
+### Cluster Life Cycle
+
+When a cluster is created (`pga cluster create`), it is started immediately and will appear with status `Running`.
+
+A cluster can be stopped, started, re-started (stop & start), and deleted.
+During the life cycle of a running or stopped cluster, the cluster data (PGDATA, configuration, and logs) are stored persistently on disk and are accessible in your file system.
+The data is fully deleted only at cluster deletion.
 
 ### Access Cluster Logs
 
@@ -94,12 +104,12 @@ pga cluster logs postgres-16-2
 
 ```text {.no-copy-to-clipboard}
 [...]
-2024-03-28T09:41:24.161014055+01:00 stderr F 2024-03-28 08:41:24.160 UTC [7] LOG:  starting PostgreSQL 16.2 (Debian 16.2-1.pgdg120+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit
-2024-03-28T09:41:24.161024184+01:00 stderr F 2024-03-28 08:41:24.160 UTC [7] LOG:  listening on IPv4 address "0.0.0.0", port 5432
-2024-03-28T09:41:24.16102722+01:00 stderr F 2024-03-28 08:41:24.160 UTC [7] LOG:  listening on IPv6 address "::", port 5432
-2024-03-28T09:41:24.166231592+01:00 stderr F 2024-03-28 08:41:24.165 UTC [7] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
-2024-03-28T09:41:24.177135004+01:00 stderr F 2024-03-28 08:41:24.176 UTC [69] LOG:  database system was shut down at 2024-03-28 08:41:24 UTC
-2024-03-28T09:41:24.183356961+01:00 stderr F 2024-03-28 08:41:24.182 UTC [7] LOG:  database system is ready to accept connections
+2024-03-28 08:41:24.160 UTC [7] LOG:  starting PostgreSQL 16.2 (Debian 16.2-1.pgdg120+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit
+2024-03-28 08:41:24.160 UTC [7] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2024-03-28 08:41:24.160 UTC [7] LOG:  listening on IPv6 address "::", port 5432
+2024-03-28 08:41:24.165 UTC [7] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2024-03-28 08:41:24.176 UTC [69] LOG:  database system was shut down at 2024-03-28 08:41:24 UTC
+2024-03-28 08:41:24.182 UTC [7] LOG:  database system is ready to accept connections
 ```
 
 The command can be used with or without the `-f` (`--follow`) option which when specified keeps the output open and streams new log lines as they arrive.
@@ -141,10 +151,10 @@ pga cluster list --show-tags
 ```
 
 ```text {.no-copy-to-clipboard}
-Name           Status    Version   Port      Tags      
-postgres-15-5  Running   15.5      5430      app=frontend, env=test
-postgres-16-2  Running   16.2      5432      app=backend, env=prod
-postgres-15-6  Running   15.6      5431      app=backend, env=test
+Name           Node       Primary   Status    Version   Port      Tags      
+postgres-15-5  archlinux  Primary   Running   15.5      5430      app=frontend, env=test
+postgres-15-6  archlinux  Primary   Running   15.6      5431      app=backend, env=test
+postgres-16-2  archlinux  Primary   Running   16.2      5432      app=backend, env=prod
 ```
 
 We can filter that list by one or more tags:
@@ -154,9 +164,9 @@ pga cluster list --tag env=test
 ```
 
 ```text {.no-copy-to-clipboard}
-Name           Status    Version   Port
-postgres-15-6  Running   15.6      5431      
-postgres-15-5  Running   15.5      5430
+Name           Node       Primary   Status    Version   Port      
+postgres-15-5  archlinux  Primary   Running   15.5      5430      
+postgres-15-6  archlinux  Primary   Running   15.6      5431      
 ```
 
 ```
@@ -164,23 +174,24 @@ pga cluster list -t env=test,app=backend --show-tags
 ```
 
 ```text {.no-copy-to-clipboard}
-Name           Status    Version   Port      Tags      
-postgres-15-6  Running   15.6      5431      app=backend, env=test
+Name           Node       Primary   Status    Version   Port      Tags      
+postgres-15-6  archlinux  Primary   Running   15.6      5431      app=backend, env=test
 ```
 
-### Stop Clusters With Specific Tags
+### Manage Clusters With Specific Tags
 
-The cluster tags can be used in the `cluster stop` command as well.
+The cluster tags can be used in the `cluster stop` command, as well as `start`, `restart`, and `delete`.
+The following shows the example of `cluster stop`:
 
 ```
 pga cluster list --show-tags
 ```
 
 ```text {.no-copy-to-clipboard}
-Name           Status    Version   Port      Tags      
-postgres-15-5  Running   15.5      5430      app=frontend, env=test
-postgres-16-2  Running   16.2      5432      app=backend, env=prod
-postgres-15-6  Running   15.6      5431      app=backend, env=test
+Name           Node       Primary   Status    Version   Port      Tags      
+postgres-15-5  archlinux  Primary   Running   15.5      5430      app=frontend, env=test
+postgres-15-6  archlinux  Primary   Running   15.6      5431      app=backend, env=test
+postgres-16-2  archlinux  Primary   Running   16.2      5432      app=backend, env=prod
 ```
 
 Now we stop all clusters tagged with `app=backend`:
@@ -190,65 +201,35 @@ pga cluster stop --tag app=backend
 ```
 
 ```text {.no-copy-to-clipboard}
-✓ Clusters with tags (app=backend) have been stopped and their resources have been removed
+✓ Clusters with tags (app=backend) have been stopped
 ```
 
-In our example, only one cluster is left:
+In our example, only one cluster is left running:
 
 ```
 pga cluster list --show-tags
 ```
 
 ```text {.no-copy-to-clipboard}
-Name           Status    Version   Port      Tags      
-postgres-15-5  Running   15.5      5430      app=frontend, env=test
+Name           Node       Primary   Status    Version   Port      Tags      
+postgres-15-5  archlinux  Primary   Running   15.5      5430      app=frontend, env=test
+postgres-15-6  archlinux  Primary   Stopped   15.6      5431      app=backend, env=test
+postgres-16-2  archlinux  Primary   Stopped   16.2      5432      app=backend, env=prod
 ```
 
-## Cluster Removal
-
-PGA clusters can be stopped and removed with the `cluster stop` command.
-We have the possibility to specify to stop a single cluster by name, all clusters, or clusters with certain tags.
-
-Given the following clusters:
-
-```text {.no-copy-to-clipboard}
-Name           Status    Version   Port      Tags      
-postgres-15-5  Running   15.5      5430      app=frontend, env=test
-postgres-16-2  Running   16.2      5432      app=backend, env=prod
-postgres-15-6  Running   15.6      5431      app=backend, env=test
-```
-
-This command would stop only the `postgres-15-5` cluster:
-
-```
-pga cluster stop postgres-15-5
-```
-
-This command would stop all clusters tagged with `app=backend` (`postgres-16-2` and `postgres-15-6`):
-
-```
-pga cluster stop --tag app=backend
-```
-
-And this command can be used to stop all running clusters:
-
-```
-pga cluster stop --all
-```
-
-### Keep PgData
+## Cluster Data
 
 PGA clusters store the PGDATA directory on our computer's harddisk and mount them into the running Postgres instance.
 At cluster creation time, this directory can be specified; otherwise, the directory resides under our default PGA installation (that is `/var/lib/pga/clusters/<cluster-name>/`).
 
-At cluster removal time, the directory is also removed.
-It's possible, however, to keep the directory for later usage, especially when creating a new PGA cluster (with the same name), thus keeping the data persistently.
+At cluster deletion time, the directory is also removed.
+When a cluster is stopped or restarted only, all data is kept persistently, for later usage.
 
 The following example illustrates this:
 
 ```text {.no-copy-to-clipboard}
-Name      Status    Version   Port      
-postgres  Running   15.3      5432      
+Name      Node       Primary   Status    Version   Port      
+postgres  archlinux  Primary   Running   16.2      5432      
 ```
 
 We can see the contents of our `postgres`' PGDATA directory.
@@ -259,29 +240,73 @@ ls -hl /var/lib/pga/clusters/postgres/
 ```
 
 ```text {.no-copy-to-clipboard}
-total 4.0K
-drwx------ 19 999 root 4.0K Mar 23 08:51 pgdata
+total 8.0K
+drwxr-xr-x  2 root root 4.0K Apr  5 08:59 logs
+drwx------ 19 999  root 4.0K Mar 23 08:51 pgdata
 ```
 
-When stopping our cluster, this directory is usually also removed, unless we specify the `--keep-pg-data` option at removal time:
+When stopping our cluster, this directory still exists:
 
 ```
-pga cluster stop postgres --keep-pgdata
+pga cluster stop postgres
 ```
 
 ```text {.no-copy-to-clipboard}
-✓ The cluster postgres has been stopped and all its resources have been removed, the PGDATA directory still exists
+✓ The cluster postgres has been stopped
 ```
 
-The `postgres/pgdata` directory still exists:
+The `clusters/postgres/` directory still exists:
 
 ```
 ls -hl /var/lib/pga/clusters/postgres/
 ```
 
 ```text {.no-copy-to-clipboard}
-total 4.0K
-drwx------ 19 999 root 4.0K Mar 23 08:51 pgdata
+total 8.0K
+drwxr-xr-x  2 root root 4.0K Apr  5 08:59 logs
+drwx------ 19 999  root 4.0K Mar 23 08:51 pgdata
 ```
 
-If we create a new PGA cluster `postgres`, this data directory will be reused.
+If we re-start the `postgres` PGA cluster, the contents of this data directory will be used again.
+Only at cluster deletion time will this directory be removed.
+
+## Cluster Deletion
+
+PGA clusters can be stopped and fully removed with the `cluster delete` command.
+Just like for the `start`, `restart`, and `stop` command, we have the possibility to specify a single cluster by name, all clusters, or clusters with certain tags.
+
+Given the following clusters:
+
+```text {.no-copy-to-clipboard}
+Name           Status    Version   Port      Tags      
+postgres-15-5  archlinux  Primary   Running   15.5      5430      app=frontend, env=test
+postgres-15-6  archlinux  Primary   Stopped   15.6      5431      app=backend, env=test
+postgres-16-2  archlinux  Primary   Stopped   16.2      5432      app=backend, env=prod
+```
+
+This command would delete only the `postgres-15-5` cluster:
+
+```
+pga cluster delete postgres-15-5
+```
+
+This command would delete all clusters tagged with `app=backend` (`postgres-16-2` and `postgres-15-6`):
+
+```
+pga cluster delete --tag app=backend
+```
+
+And this command can be used to delete all clusters:
+
+```
+pga cluster delete --all
+```
+
+Since the cluster deletion is an irrecoverable action that will remove our data, we have to confirm on the command line (or bypass the confirmation with the option `-f` / `--force`):
+
+```text {.no-copy-to-clipboard}
+$> pga cluster delete --all
+This will delete all data of the clusters (including the PGDATA directories and PostgreSQL config)
+To confirm type delete and press Enter: delete
+✓ All clusters have been deleted
+```

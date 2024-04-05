@@ -8,7 +8,7 @@ description: Details about how to install PGA.
 Install PGA with the following command:
 
 ```
-curl -sfL https://pga.ongres.dev/pga.sh | sh -
+curl -sfL https://pga.sh/install | sh -
 ```
 
 This installs the `pga` binary, the Systemd service (`pga.service`) which will be enabled and running, as well as `pga-killall.sh` and `pga-uninstall.sh` scripts.

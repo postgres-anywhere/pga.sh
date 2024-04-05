@@ -12,34 +12,34 @@ In the command line, you can quickly list the possible sub-commands and options 
 
 ```text {.no-copy-to-clipboard}
 $> pga
-Please specify a subcommand or run the daemon with --server
-Usage: pga [-hX] [--server] [COMMAND]
+Usage: pga [-h] [COMMAND]
 Manages PostgreSQL (Postgres Anywhere)
   -h, --help
-      --server   Starts the server process
-  -X, --debug    Prints debug and error stacktrace information
 Commands:
-  cluster    Manages PostgreSQL clusters (Postgres Anywhere)
-  extension  Manages PostgreSQL extensions
-  info       Displays information about the PGA installation
+  cluster  Manages PostgreSQL clusters (Postgres Anywhere)
+  info     Displays information about the PGA installation
 ```
 
 This `--help` option works for all sub-commands and offers a quick reference:
 
 ```text {.no-copy-to-clipboard}
 $> pga cluster --help
-Usage: pga cluster [-hX] [COMMAND]
+Usage: pga cluster [-h] [COMMAND]
 Manages PostgreSQL clusters (Postgres Anywhere)
   -h, --help
-  -X, --debug   Prints debug and error stacktrace information
 Commands:
-  get     Get a PostgreSQL clusters by its name
-  list    Lists the PostgreSQL clusters
-  create  Creates a PostgreSQL cluster
-  stop    Stops one or more PostgreSQL clusters and removes their resources
-  exec    Executes a command in a running PostgreSQL instance (i.e. the
-            container)
-  psql    Opens a psql terminal to a running PostgreSQL cluster.
+  get      Get a PostgreSQL clusters by its name
+  list     Lists the PostgreSQL clusters
+  create   Creates and starts a PostgreSQL cluster
+  stop     Stops one or more PostgreSQL clusters
+  start    Starts one or more (previously stopped) PostgreSQL clusters
+  restart  Stops and restarts one or more PostgreSQL clusters
+  delete   Stops and deletes one or more PostgreSQL clusters
+  logs     Prints the logs of a running PostgreSQL instance
+  exec     Executes a command in a running PostgreSQL instance (i.e. the container)
+  psql     Opens a psql terminal to a running PostgreSQL cluster.
+  config   Generates config files for PostgreSQL clusters
+  version  Manages PostgreSQL versions
 ```
 
 ## PGA Installation Info
@@ -50,18 +50,18 @@ The command `pga info` retrieves information about your PGA installation.
 
 ```text {.no-copy-to-clipboard}
 $> pga info
-PGA 1.0-SNAPSHOT
+PGA 0.1
 
 Client:
-Version: 1.0-SNAPSHOT
+Version: 0.1
 Daemon URL: http://localhost:54321
 
 Daemon:
-Version: 1.0-SNAPSHOT
+Version: 0.1
 Listen address: 127.0.0.1
 Port: 54321
 Installation directory: /var/lib/pga
-Clusters storage directory: /var/lib/pga/clusters
+Default cluster storage: /var/lib/pga/clusters
 Containerd version: 1.7.3
 Containerd socket: /var/run/pga/containerd/containerd.sock
 System service file: /etc/systemd/system/pga.service
@@ -79,33 +79,32 @@ The command `pga cluster list` lists all running Postgres clusters on your syste
 
 ```text {.no-copy-to-clipboard}
 $> pga cluster list --help
-Usage: pga cluster list [-h] [--show-tags] [-t=<key=value>]...
+Usage: pga cluster list [-h] [--show-tags] [-t=<key=value>[,<key=value>...]]...
 Lists the PostgreSQL clusters
   -h, --help
-      --show-tags         Shows the cluster tags in the list
-  -t, --tag=<key=value>   Only list clusters that are tagged accordingly
+      --show-tags   Shows the cluster tags in the list
+  -t, --tag=<key=value>[,<key=value>...]
+                    Only list clusters that are tagged accordingly
 ```
 
 #### Examples
 
 ```text {.no-copy-to-clipboard}
 $> pga cluster list
-PostgreSQL clusters:
-Name           Status    Version   Port
-postgres-16-2  Running   16.2      5432
-postgres-15-6  Running   15.6      5431
-postgres-15-5  Running   15.5      5430
+Name           Node       Primary   Status    Version   Port
+postgres-16-2  archlinux  Primary   Running   16.2      5432
+postgres-15-6  archlinux  Primary   Running   15.6      5431
+postgres-15-5  archlinux  Primary   Running   15.5      5430
 ```
 
 The option `--show-tags` will include the optional tags that have been set at cluster creation time:
 
 ```text {.no-copy-to-clipboard}
 $> pga cluster list --show-tags
-PostgreSQL clusters:
-Name           Status   Version  Port  Tags
-postgres-16-2  Running  16.2     5432  env=prod, app=backend
-postgres-15-6  Running  15.6     5431  app=backend
-postgres-15-5  Running  15.5     5430
+Name           Node       Primary   Status    Version   Port      Tags      
+postgres-16-2  archlinux  Primary   Running   16.2      5432      app=backend, env=prod
+postgres-15-6  archlinux  Primary   Running   15.6      5431      app=backend
+postgres-15-5  archlinux  Primary   Running   15.5      5430
 ```
 
 The option `-t` (`--tag`) lists only clusters that have been tagged with the given tag(s).
@@ -113,17 +112,17 @@ If multiple tags are stated in the filter, only clusters that match all these ta
 
 ```text {.no-copy-to-clipboard}
 $> pga cluster list -t app=backend
-Name           Status   Version  Port
-postgres-16-2  Running  16.2     5432
-postgres-15-6  Running  15.6     5431
+Name           Node       Primary   Status    Version   Port      
+postgres-16-2  archlinux  Primary   Running   16.2      5432      
+postgres-15-6  archlinux  Primary   Running   15.6      5431      
 ```
 
 It's possible to state multiple tags either as multiple `-t`/`--tag` options, or by combining them as comma-separated values, such as: `-t env=prod,app=backend`
 
 ```text {.no-copy-to-clipboard}
 $> pga cluster list -t app=backend -t env=prod --show-tags
-Name           Status   Version  Port  Tags
-postgres-16-2  Running  16.2     5432  env=prod, app=backend
+Name           Node       Primary   Status    Version   Port      Tags      
+postgres-16-2  archlinux  Primary   Running   16.2      5432      app=backend, env=prod
 ```
 
 ### Get Cluster
@@ -148,12 +147,14 @@ The following command retrieves information about a cluster named `postgres`:
 $> pga cluster get postgres
 PostgreSQL cluster:
 
-Name:      postgres
-Status:    Running
-Postgres:  15.3
-Flavor:    postgres
-Port:      5432
-Tags:      app=backend, env=prod
+Name:       postgres
+Host:       archlinux
+Primary:    Primary
+Status:     Running
+Postgres:   16.2
+Flavor:     postgres
+Port:       5432
+Tags:       app=backend, env=prod
 ```
 
 ### Create Cluster
@@ -164,13 +165,10 @@ The command `pga cluster create` creates a Postgres cluster.
 
 ```text {.no-copy-to-clipboard}
 $> pga cluster create --help
-Usage: pga cluster create [-h] [-f=<file>] [-F=<flavor>] [-n=<name>] [-p=<port>] [-P=<password>] [--pgdata=<path>] [-u=<username>] [-v=<version>]
-                                  [-e=<extension> [,<extension>...]]... [-t=<key=value>]...
+Usage: pga cluster create [-h] [-f=<file>] [-n=<name>] [-p=<port>] [-P=<password>] [--pgdata=<path>] [-u=<username>] [-v=<version>]
+                                  [-t=<key=value>]...
 Creates a PostgreSQL cluster
-  -e, --extensions=<extension>[,<extension>...]
-                            The PostgreSQL extensions (comma-separated extension names)
   -f, --file=<file>         A YAML file containing a PostgreSQL cluster definition (overrides other options)
-  -F, --flavor=<flavor>     The PostgreSQL flavor (postgres, babelfish; default: 'postgres')
   -h, --help
   -n, --name=<name>         The cluster name
   -p, --port=<port>         The port of the PostgreSQL cluster (default: 5432). Specifying 0 will randomly choose a free port.
@@ -189,40 +187,35 @@ At the very least, the cluster name has to be defined:
 ```text {.no-copy-to-clipboard}
 $> pga cluster create -n postgres
 ✓ Creating PostgreSQL cluster
-Cluster definition checked
-Pulling image docker.io/library/postgres:15.3 ...
-Pulled image docker.io/library/postgres:15.3
+Downloading Postgres image 16.2
+Image downloaded
 Postgres started, waiting for readiness ...
 Cluster postgres started successfully
+
+Connect to your cluster with the following command: pga cluster psql postgres
+Generate or write your ~/.pgpass or ~/.pg_service.conf with: pga cluster config write postgres
+View more information about your cluster with: pga cluster get postgres
 ```
 
-...
+The last output lines of the command show how to connect to your cluster and how to get more information.
 
-```text {.no-copy-to-clipboard}
-$> pga cluster create -n postgres -t env=prod,app=backend
-✓ Creating PostgreSQL cluster
-Cluster definition checked
-Pulling image docker.io/library/postgres:15.3 ...
-Pulled image docker.io/library/postgres:15.3
-Postgres started, waiting for readiness ...
-Cluster postgres started successfully
-```
+As you can see in the help, you can specify many more options, such as the port number, Postgres superuser and password, or cluster tags.
 
-### Stop &amp; Remove Cluster
+### Stop Cluster
 
-The command `pga cluster stop` stops a running Postgres cluster and removes all of its resources.
+The command `pga cluster stop` stops a running Postgres cluster.
 
 #### Usage
 
 ```text {.no-copy-to-clipboard}
 $> pga cluster stop --help
-Usage: pga cluster stop [-h] [--keep-pgdata] (<name> | --all | -t=<key=value>)
-Stops one or more PostgreSQL clusters and removes their resources
-     [<name>]             The cluster name
-     --all                Stop all clusters
+Usage: pga cluster stop [-h] (<name> | --all | -t=<key=value>)
+Stops one or more PostgreSQL clusters
+      [<name>]   The cluster name
+      --all      Stop all clusters
   -h, --help
-      --keep-pgdata       Doesn't delete the PGDATA directory on the host
-  -t, --tag=<key=value>   Only stop clusters that are tagged accordingly
+  -t, --tag=<key=value>[,<key=value>...]
+                 Only stop clusters that are tagged accordingly
 Either of <name>, --all, or --tag is required
 ```
 
@@ -230,7 +223,57 @@ Either of <name>, --all, or --tag is required
 
 ```text {.no-copy-to-clipboard}
 $> pga cluster stop postgres
-✓ The cluster postgres has been stopped and all its resources have been removed
+✓ The cluster postgres has been stopped
+```
+
+### Start A Stopped Cluster
+
+The command `pga cluster start` (re-)starts a cluster that has been stopped.
+
+#### Usage
+
+```text {.no-copy-to-clipboard}
+$> pga cluster start --help
+Usage: pga cluster start [-h] (<name> | --all | -t=<key=value>)
+Starts one or more (previously stopped) PostgreSQL clusters
+      [<name>]   The cluster name
+      --all      Start all stopped clusters
+  -h, --help
+  -t, --tag=<key=value>[,<key=value>...]
+                 Only start clusters that are tagged accordingly
+Either of <name>, --all, or --tag is required
+```
+
+#### Examples
+
+```text {.no-copy-to-clipboard}
+$> pga cluster start --tag=env=prod
+✓ Clusters with tags (env=prod) have been started
+```
+
+### Restart A Cluster
+
+The command `pga cluster restart` restarts a running or stopped cluster.
+
+#### Usage
+
+```text {.no-copy-to-clipboard}
+$> pga cluster restart --help
+Usage: pga cluster restart [-h] (<name> | --all | -t=<key=value>)
+Stops and restarts one or more PostgreSQL clusters
+      [<name>]   The cluster name
+      --all      Restart all clusters
+  -h, --help
+  -t, --tag=<key=value>[,<key=value>...]
+                 Only restart clusters that are tagged accordingly
+Either of <name>, --all, or --tag is required
+```
+
+#### Examples
+
+```text {.no-copy-to-clipboard}
+$> pga cluster restart --all
+✓ All clusters have been restarted
 ```
 
 ### Exec In Cluster
@@ -323,29 +366,56 @@ $> pga cluster logs postgres
 2024-03-28T09:51:58.722459617+01:00 stderr F 2024-03-28 08:51:58.722 UTC [7] LOG:  database system is ready to accept connections
 ```
 
+### Write Cluster Config Files
 
-## Cluster Metadata Commands
-
-### List Extensions
-
-The command `pga extension list` lists all available Postgres extensions that can be used at cluster creation time.
+The command `pga cluster config write` writes `~/.pgpass` and/or `~/.pg_service.conf` config files for a PostgreSQL cluster.
+These config files are handy to work with your PostgreSQL cluster with external tools such as your own `psql` installation.
 
 #### Usage
 
 ```text {.no-copy-to-clipboard}
-$> pga extension list --help
-Usage: pga extension list [-h]
-Lists the names of the available extensions
+$> pga cluster config write --help
+Usage: pga cluster config write [-h] [--pgpass] [--pgservice] <name>
+Writes ~/.pgpass and/or ~/.pg_service.conf config files for a PostgreSQL cluster
+      <name>        The cluster name
+  -h, --help
+      --pgpass      Adds the cluster access information to ~/.pgpass
+      --pgservice   Adds the cluster access information to ~/.pg_service.conf
+If no specific option is set, this command writes the cluster information to all config files mentioned in this help.
+```
+
+#### Examples
+
+```text {.no-copy-to-clipboard}
+$> pga cluster config write postgres
+Added cluster access information in ~/.pgpass
+Added cluster access information in ~/.pg_service.conf
+```
+
+
+## Cluster Metadata Commands
+
+### List Available PostgreSQL Versions
+
+The command `pga cluster version list` lists all available Postgres versions that can be used at cluster creation time.
+
+#### Usage
+
+```text {.no-copy-to-clipboard}
+$> pga cluster version list --help
+Usage: pga cluster version list [-h]
+Lists the available PostgreSQL versions
   -h, --help
 ```
 
 #### Examples
 
 ```text {.no-copy-to-clipboard}
-$> pga extension list 
-adminpack
-amcheck
-bloom
+$> pga cluster version list
+16.2
+16.1
+15.6
+15.5
 [...]
 ```
 

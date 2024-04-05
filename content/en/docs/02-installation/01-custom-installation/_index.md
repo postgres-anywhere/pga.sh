@@ -11,7 +11,7 @@ For this, we make use of the configuration options described below.
 The recommended way is to set the configuration options at installation time:
 
 ```
-curl -sfL https://pga.ongres.dev/pga.sh | INSTALL_PGA_DIR=/my/path/pga PGA_DAEMON_PORT=54322 [...] sh - 
+curl -sfL https://pga.sh/install | INSTALL_PGA_DIR=/my/path/pga PGA_DAEMON_PORT=54322 [...] sh - 
 ```
 
 ## Configuration Options
@@ -71,7 +71,7 @@ The easiest way to ensure this is to set a different name (`INSTALL_PGA_NAME`, d
 
 ```
 # this will install a PGA installation that doesn't collide with a second one installed with the default options
-curl -sfL https://pga.ongres.dev/pga.sh | INSTALL_PGA_NAME=pga2 PGA_DAEMON_PORT=54322 sh - 
+curl -sfL https://pga.sh/install | INSTALL_PGA_NAME=pga2 PGA_DAEMON_PORT=54322 sh - 
 ```
 
 You can also set individual installation options to your choice (see the lists above).

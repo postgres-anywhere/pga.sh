@@ -50,7 +50,7 @@ See a detailed list of [PGA features]({{% relref "/docs/01-what-is-pga/01-featur
 Install PGA with the following command:
 
 ```
-curl -sfL https://pga.ongres.dev/pga.sh | sh -
+curl -sfL https://pga.sh/install | sh -
 ```
 
 See more information about the [installation]({{% relref "/docs/02-installation" %}}).
