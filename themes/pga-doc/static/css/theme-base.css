@@ -766,7 +766,6 @@ table {
     table-layout: auto;
 }
 th {
-    background: var(--activeBg);
     padding: 0.5rem;
 }
 td {

@@ -513,10 +513,6 @@ a.arrow.noGradient, #topBar a.arrow {
     background-image: initial;
 }
 
-tr:nth-child(even) {
-    background: var(--activeBg);
-}
-
 input[type="submit"] {
     cursor: pointer;
     width: auto;

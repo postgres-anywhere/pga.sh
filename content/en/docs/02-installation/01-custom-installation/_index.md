@@ -16,48 +16,33 @@ curl -sfL https://pga.sh/install | INSTALL_PGA_DIR=/my/path/pga PGA_DAEMON_PORT=
 
 ## Configuration Options
 
+### Installation
+
 Environment variables starting with `INSTALL_PGA*` are only relevant during installation time.
 The name and file paths should not be changed after the installation.
 
-- `INSTALL_PGA_NAME`:
-  The name of the PGA installation, from will the default directories,
-  service names, and binaries are derived. This changes all following options
-  that contain the default PGA name. Default: `pga`
+| <div style="width:20rem">Option</div> | Description                                                                                                                                                                                        |
+|:--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `INSTALL_PGA_NAME`                    | The name of the PGA installation, from will the default directories, service names, and binaries are derived. This changes all following options that contain the default PGA name. Default: `pga` |
+| `INSTALL_PGA_DIR`                     | The directory to install PGA, config files, and required dependencies to (default: `/var/lib/pga`).                                                                                                |
+| `INSTALL_PGA_BIN_DIR`                 | The directory to install PGA binary, links, and uninstall script to (default: `/usr/local/bin`).                                                                                                   |
+| `INSTALL_PGA_RUN_DIR`                 | The directory to where PGA run files are located (default: `/var/run/pga`).                                                                                                                        |
+| `INSTALL_PGA_SYSTEMD_DIR`             | The directory to install systemd service files to (default: `/etc/systemd/system`).                                                                                                                |
+| `INSTALL_PGA_SYSTEMD_NAME`            | The name of the systemd service to create. If not specified it will default from the PGA name.                                                                                                     |
+| `INSTALL_PGA_CREATE_DEFAULT_CLUSTER`  | If set to `true` the installation will create and start a default cluster with the latest Postgres version.                                                                                        |
 
-- `INSTALL_PGA_DIR`:
-  The directory to install PGA, config files, and required dependencies to (default: `/var/lib/pga`).
-
-- `INSTALL_PGA_BIN_DIR`:
-  The directory to install PGA binary, links, and uninstall script to (default: `/usr/local/bin`).
-
-- `INSTALL_PGA_RUN_DIR`:
-  The directory to where PGA run files are located (default: `/var/run/pga`).
-
-- `INSTALL_PGA_SYSTEMD_DIR`:
-  The directory to install systemd service files to (default: `/etc/systemd/system`).
-
-- `INSTALL_PGA_SYSTEMD_NAME`:
-  The name of the systemd service to create. If not specified it will default from the PGA name.
-
-- `INSTALL_PGA_CREATE_DEFAULT_CLUSTER`:
-  If set to `true` the installation will create and start a default cluster with the latest Postgres version.
-
+### Runtime
 
 The following environment variables configure the PGA daemon and client setup.
 These variables are configured in the PGA's config file, by default located at `/var/lib/pga/.env`.
 Some of the options can be changed after installation, by modifying the config file and restarting PGA (e.g. via Systemd).
 
-- `PGA_DAEMON_PORT`:
-  The port that the PGA listens to (default: `54321`).
-- `PGA_DAEMON_LISTEN`:
-  The IP address that the PGA listens to (default: `127.0.0.1`).
-  This can be changed (e.g. to `0.0.0.0`) if the daemon should be reachable via a network or from outside localhost.
-- `PGA_DAEMON_URL`:
-  The URL of the PGA daemon that the CLI client connects to (default: `http://localhost:<pga-daemon-port>`).
-  This only needs to be changed if the CLI should connect to a different host or port.
-- `PGA_CLUSTERS_PATH`:
-  This configures where the PostgreSQL data is stored (default: the installation directory (`/var/lib/pga`) under sub-directory `clusters/`).
-  *NOTE:* This should be set at installation time and not changed later.
+| <div style="width:12rem">Option</div> | Description                                                                                                                                                                                                        |
+|:--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `PGA_DAEMON_PORT`                     | The port that the PGA listens to (default: `54321`).                                                                                                                                                               |
+| `PGA_DAEMON_LISTEN`                   | The IP address that the PGA listens to (default: `127.0.0.1`). This can be changed (e.g. to `0.0.0.0`) if the daemon should be reachable via a network or from outside localhost.                                  |
+| `PGA_DAEMON_URL`                      | The URL of the PGA daemon that the CLI client connects to (default: `http://localhost:<pga-daemon-port>`). This only needs to be changed if the CLI should connect to a different host or port.                    |
+| `PGA_CLUSTERS_PATH`                   | This configures where the PostgreSQL data is stored (default: the installation directory (`/var/lib/pga`) under sub-directory `clusters/`). *NOTE:* This should be set at installation time and not changed later. |
 
 If these environment variables are specified at installation time, they will be persisted in the PGA configuration file.
 
