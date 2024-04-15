@@ -358,12 +358,12 @@ Prints the logs of a running PostgreSQL instance
 ```text {.no-copy-to-clipboard}
 $> pga cluster logs postgres
 [...]
-2024-03-28T09:51:58.703867007+01:00 stderr F 2024-03-28 08:51:58.703 UTC [7] LOG:  starting PostgreSQL 15.3 (Debian 15.3-1.pgdg120+1) on x86_64-pc-linux-gnu, [...]
-2024-03-28T09:51:58.703875953+01:00 stderr F 2024-03-28 08:51:58.703 UTC [7] LOG:  listening on IPv4 address "0.0.0.0", port 5432
-2024-03-28T09:51:58.703878158+01:00 stderr F 2024-03-28 08:51:58.703 UTC [7] LOG:  listening on IPv6 address "::", port 5432
-2024-03-28T09:51:58.709749772+01:00 stderr F 2024-03-28 08:51:58.709 UTC [7] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
-2024-03-28T09:51:58.717379132+01:00 stderr F 2024-03-28 08:51:58.717 UTC [69] LOG:  database system was shut down at 2024-03-28 08:51:58 UTC
-2024-03-28T09:51:58.722459617+01:00 stderr F 2024-03-28 08:51:58.722 UTC [7] LOG:  database system is ready to accept connections
+2024-03-28 08:51:58.703 UTC [7] LOG:  starting PostgreSQL 15.3 (Debian 15.3-1.pgdg120+1) on x86_64-pc-linux-gnu, [...]
+2024-03-28 08:51:58.703 UTC [7] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2024-03-28 08:51:58.703 UTC [7] LOG:  listening on IPv6 address "::", port 5432
+2024-03-28 08:51:58.709 UTC [7] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2024-03-28 08:51:58.717 UTC [69] LOG:  database system was shut down at 2024-03-28 08:51:58 UTC
+2024-03-28 08:51:58.722 UTC [7] LOG:  database system is ready to accept connections
 ```
 
 ### Write Cluster Config Files

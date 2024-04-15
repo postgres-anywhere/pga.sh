@@ -39,8 +39,8 @@ Some of the options can be changed after installation, by modifying the config f
 
 | <div style="width:12rem">Option</div> | Description                                                                                                                                                                                                        |
 |:--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `PGA_DAEMON_PORT`                     | The port that the PGA listens to (default: `54321`).                                                                                                                                                               |
-| `PGA_DAEMON_LISTEN`                   | The IP address that the PGA listens to (default: `127.0.0.1`). This can be changed (e.g. to `0.0.0.0`) if the daemon should be reachable via a network or from outside localhost.                                  |
+| `PGA_DAEMON_PORT`                     | The port that the PGA daemon listens to (default: `54321`).                                                                                                                                                        |
+| `PGA_DAEMON_LISTEN`                   | The IP address that the PGA daemon listens to (default: `127.0.0.1`). This can be changed (e.g. to `0.0.0.0`) if the daemon should be reachable via a network or from outside localhost.                           |
 | `PGA_DAEMON_URL`                      | The URL of the PGA daemon that the CLI client connects to (default: `http://localhost:<pga-daemon-port>`). This only needs to be changed if the CLI should connect to a different host or port.                    |
 | `PGA_CLUSTERS_PATH`                   | This configures where the PostgreSQL data is stored (default: the installation directory (`/var/lib/pga`) under sub-directory `clusters/`). *NOTE:* This should be set at installation time and not changed later. |
 
