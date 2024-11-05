@@ -130,7 +130,6 @@ h2:hover .anchor, h3:hover .anchor, h4:hover .anchor, h5:hover .anchor, h6:hover
 /* Redfines headers style */
 
 h2, h3, h4, h5, h6 {
-  font-weight: 400;
   line-height: 1.1;
 }
 

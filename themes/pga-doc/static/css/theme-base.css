@@ -506,7 +506,6 @@ h2, h3, h4, h5, h6 {
     font-family: 'IBM Plex Sans', sans-serif;
     text-rendering: optimizeLegibility;
     color: var(--textColor);
-    font-weight: 400;
     letter-spacing: -1px;
 }
 h1 {

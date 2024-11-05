@@ -1,0 +1,614 @@
+---
+title: "PGA Containers"
+url: /containers
+sidebar: false
+breadcrumbs: false
+---
+
+<section id="containers">
+    <div class="row">
+        <div class="col-sm-12 marginAuto">
+            <div id="imageDetails" class="row align-items-start">
+                <div class="box col-sm-2 padXS">
+                    <label class="textCenter padTopXS">
+                        Command
+                    </label>
+                    <div class="form-group row padXS">
+                        <div class="col-md-12 col-lg-6 noPadding">
+                            <label class="radioLabel monospaced small">
+                                pull
+                                <input
+                                    type="radio"
+                                    name="command"
+                                    id="command-pull"
+                                    value="docker pull $imageURL"
+                                    checked
+                                    onchange="getImageUrl()"
+                                />
+                            </label>
+                        </div>
+                        <div class="col-md-12 col-lg-6 noPadding">
+                            <label class="radioLabel monospaced small fullWidth">
+                                run
+                                <input
+                                    type="radio"
+                                    name="command"
+                                    id="command-run"
+                                    value="docker run –rm --name pg -d -e POSTGRES_PASSWORD=pwd $imageURL
+
+docker exec -it pg psql postgres postgres"
+                                    onchange="getImageUrl()"
+                                />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-10">
+                    <pre class="copyCode fullWidth">
+                        <code id="imageUrl">docker pull 42.pga.sh/pga/postgres</code>
+                    </pre><br/><br/>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <hr/>
+            <div class="row align-items-start">
+                <form id="imageForm" class="col-sm-8">
+                    <div class="form-group col-xs-12 col-sm-6 hidden">
+                        <label>
+                            Platform
+                        </label>
+                        <div id="platformContainer" class="row"></div>
+                    </div>
+                    <div class="form-group col-xs-12 col-sm-6 hidden">
+                        <label>
+                            Flavor
+                        </label>
+                        <select name="flavor" id="flavor" class="getOptions">
+                            <option value="">Choose flavor...</option>
+                            <option value="postgres" selected>Postgres</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-xs-12 col-sm-6 hidden">
+                        <label>
+                            T-Shirt Size
+                        </label>
+                        <select name="tshirt-size" id="tshirt-size" class="getOptions">
+                            <option value="">Choose size...</option>
+                            <option value="m" selected>M</option>
+                        </select>
+                    </div>
+                    <div class="form-group textCenter">
+                        <label>
+                            Postgres Version
+                        </label>
+                        <select
+                            name="version"
+                            id="version"
+                            class="getExtensions autoWidth marginAuto"
+                            onchange="getImageUrl()"
+                            disabled
+                        >
+                            <option disabled>Choose version...</option>
+                        </select>
+                    </div>
+
+                    <div id="extensions" class="col-sm-12 hidden">
+                        <label class="textCenter">
+                            Extensions
+                        </label>
+                    </div>
+                </form>
+                <div id="checkout" class="col-sm-4">
+                    <h3>Checkout</h3>
+                    <table class="subTotal">
+                        <tbody>
+                            <tr>
+                                <td colspan="2">
+                                    <ul class="small">
+                                        <li class="architectures">
+                                            <strong class="label">
+                                                Architectures
+                                            </strong>
+                                            <ul></ul>
+                                        </li>
+                                        <li class="flavorVersions">
+                                            <strong class="label">
+                                                Versions
+                                            </strong>
+                                            <ul></ul>
+                                        </li>
+                                        <li class="flavorExtensions hidden">
+                                            <strong class="label">
+                                                Extensions
+                                            </strong>
+                                            <ul></ul>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr class="small">
+                                <td class="label">
+                                    <strong>Total</strong>
+                                </td>
+                                <td class="value">
+                                    <code>$0 (always)</code>
+                                </td>
+                            </tr>
+                            <tr class="small">
+                                <td class="label">
+                                    <strong>Tip</strong>
+                                </td>
+                                <td class="value">
+                                    <code>
+                                        <a href="https://github.com/postgres-anywhere" target="_blank">Star on GitHub</a>
+                                    </code>
+                                </td>
+                            </tr>
+                    </tbody>
+                    </div>
+                </div>
+            </div>
+    </div>
+</section>
+<div id="extensionsPopup" class="hidden popUp">
+    <div class="overlay" onclick="toggleExtensionsPopup()"></div>
+    <div class="info"></div>
+</div>
+
+<script>
+
+    const imageUrl = document.getElementById('imageUrl');
+    const platformContainer = document.getElementById('platformContainer');
+    const optionsGetters = document.querySelectorAll(".getOptions");
+    const versionSelector = document.getElementById('version');
+    const extensionsList = document.getElementById('extensionsList');
+    var extensionsData = null;
+            
+
+    function addOption(selectId, optionValue, optionText, selected = false) {
+        // Get the select element
+        var select = document.getElementById(selectId);
+
+        // Create a new option element
+        var newOption = document.createElement('option');
+
+        // Set the value and display text for the new option
+        newOption.value = optionValue;
+        newOption.text = optionText;
+        newOption.selected = selected;
+
+        // Add the option to the select dropdown
+        select.appendChild(newOption);
+    }
+
+    /* // Get available flavors
+    fetch('https://42.pga.sh/api/pga/v1/flavors')
+    .then(response => response.json())
+    .then(data =>
+        data.flavors.forEach(flavor => {
+            addOption('flavor', flavor.flavor, flavor.description)  
+        })
+    ); */
+
+    // Toggle extension selection
+    function toggleExtension(extName) {
+        const ext = document.querySelector(`li.extension[data-name=${extName}]`);
+
+        if(ext.classList.contains('active')) {
+            ext.classList.remove('active');
+        } else {
+            ext.classList.add('active');
+        }
+        getImageUrl();
+    }
+
+    // Get image URL
+    function getImageUrl(tShirtSize = 'm', flavor = 'postgres') {
+        let extensions = [];
+        const selectedExtensions = document.querySelectorAll('li.extension input.enableExtension:checked');
+        
+        selectedExtensions.forEach( (ext) => {
+            extensions.push(JSON.parse(ext.value))
+        });
+
+        const postgresVersion = document.getElementById('version');
+        let flavorVersions = [];
+        if( (postgresVersion.options.length > 1) && !postgresVersion.options[postgresVersion.selectedIndex].text.startsWith('latest')) {
+            flavorVersions.push(
+                {
+                    majorVersion: postgresVersion.value.split('.')[0],
+                    minorVersion: postgresVersion.value.split('.')[1]
+                }
+            );
+        }
+
+        fetch('https://42.pga.sh/api/pga/v1/image-url', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                //'tshirtSize': tShirtSize,
+                'flavorName': flavor,
+                ...(flavorVersions.length && {
+                    'flavorVersions': flavorVersions
+                }),
+                ...(extensions.length && {
+                    'extensions': extensions
+                })
+            })
+        })
+        .then(response => response.json())
+        .then( (data) => {
+            const command = document.querySelector('input[name="command"]:checked').value;
+            imageUrl.innerHTML = command.replace('$imageURL', data.url);
+
+            const architectures = document.querySelector('li.architectures ul');
+            architectures.innerHTML = '';
+            
+            const flavorVersions = document.querySelector('li.flavorVersions ul');
+            flavorVersions.innerHTML = '';
+
+            data.imagePlatforms.forEach( (platform) => {
+                architectures.innerHTML += `
+                    <li>
+                        <strong>– ${platform.os}/${platform.architecture}</strong>: ${(platform.base.size / 1000000).toFixed(2)}MB
+                    </li>`;
+
+                    platform.flavorVersions.forEach( (version) => {
+                        flavorVersions.innerHTML += `
+                            <li>
+                                <strong>– ${version.majorVersion}.${version.minorVersion}</strong>: ${(version.size / 1000000).toFixed(2)}MB
+                            </li>`;
+                    })
+            });
+
+            data.image.flavorVersions.forEach( (version, index) => {
+                const flavorExtensionsContainer = document.querySelectorAll('li.flavorExtensions')[index];
+                if(version.extensions.length) {
+                    flavorExtensionsContainer.classList.remove('hidden');
+
+                    const flavorExtensions = document.querySelector('li.flavorExtensions ul');
+                    flavorExtensions.innerHTML = '';
+
+                    version.extensions.forEach( (ext) => {
+                        flavorExtensions.innerHTML += `
+                            <li>
+                                <strong>– ${ext.name}</strong> (${ext.version})
+                            </li>`;
+                    });
+                } else {
+                    flavorExtensionsContainer.classList.add('hidden');
+                }
+            })
+
+            /* let imageSize = {
+                total: 0,
+                components: {}
+            };
+
+            imageSize.components['base'] = data.image.size;
+            imageSize.components['postgres'] = data.image.flavors[0].size;
+
+            if(data.image.flavors[0].extensions.length) {
+                imageSize.components['extensions'] = 0;
+
+                data.image.flavors[0].extensions.forEach( (ext) => {
+                    imageSize.components['extensions'] += ext.size;
+                })
+            }
+
+            Object.keys(imageSize.components).forEach( (comp) => {
+                imageSize.total += imageSize.components[comp];
+            })
+
+            const imageSizeTotal = document.querySelector('#imageSize strong');
+
+            imageSizeTotal.innerHTML = `Image Size: ${(imageSize.total / 1000000).toFixed(2)}MB`;
+
+            const imageSizeContainer = document.querySelector('.sizeBar');
+            imageSizeContainer.innerHTML = '';
+            Object.keys(imageSize.components).forEach( (comp) => {
+                imageSizeContainer.innerHTML += `
+                    <span class="size ${comp}" style="width: ${imageSize.components[comp] * 100 / imageSize.total}%" title="${comp} (${(imageSize.components[comp] / 1000000).toFixed(2)}MB)">
+                        <strong>${comp}</strong><br/>
+                        ${(imageSize.components[comp] / 1000000).toFixed(2)}MB
+                    </span>`;
+            }) */
+        });
+    }
+
+    // Get available platforms
+    fetch('https://42.pga.sh/api/pga/v1/platforms')
+    .then(response => response.json())
+    .then(data =>
+        data.platforms.forEach(platform => {
+            const input = document.createElement('label');
+            input.innerHTML = `
+                ${platform.os}/${platform.architecture}
+                <input
+                    type="radio"
+                    name="platform"
+                    id="platform-${platform.architecture}"
+                    value="${platform.architecture}"
+                    class="getOptions"
+                    ${platform.architecture === 'amd64' && 'checked'}
+                    onchange="getVersions('${platform.architecture}')"
+                />
+            `;
+
+            input.classList.add('radioLabel');
+            input.setAttribute('for', `platform-${platform.architecture}`);
+
+            platformContainer.appendChild(input);
+        })
+    )
+    .then(
+        getImageUrl()
+    ).then(
+        getVersions()
+    );
+
+    /*optionsGetters.forEach( (getter) => {
+        getter.addEventListener("change", (event) => {
+            let setGetters = 0;
+            optionsGetters.forEach((getter) => {
+                if(getter.value.length) {
+                    setGetters += 1;
+                }
+            })
+
+            if(setGetters === optionsGetters.length) {
+                getVersions(optionsGetters[0].value, optionsGetters[1].value, optionsGetters[2].value);
+            }
+        });
+    }); */
+
+    function getVersions(architecture = 'amd64', flavor = 'postgres', size = 'm') {
+        fetch(`https://42.pga.sh/api/pga/v1/versions?architecture=${architecture}&flavor=${flavor}&tshirt-size=${size}`)
+        .then(response => response.json())
+        .then( (data) => {
+            data.versions.forEach(version => {
+                addOption(
+                    'version',
+                    version.version,
+                    version.label.includes('latest') 
+                        ? `${version.label} (${version.version})`
+                        : version.label,
+                    (version.label === 'latest'))  
+            });
+
+            versionSelector.removeAttribute('disabled');
+            getExtensions(architecture, flavor)
+        });
+    }
+
+    const extensionsGetter = document.querySelectorAll(".getExtensions");
+
+    extensionsGetter.forEach( (getter) => {
+        getter.addEventListener("change", (event) => {
+            const platform = document.querySelector('input[name="platform"]:checked');
+            getExtensions(platform.value, 'postgres', getter.value.split('.')[0], getter.value.split('.')[1]);
+        });
+    });
+
+    function getExtensions(architecture = 'amd64', flavor = 'postgres', majorVersion = '', minorVersion = '') {
+
+        extensionsData = null;
+
+        const searchExtension = document.getElementById('searchExtension');
+        if(searchExtension) {
+            searchExtension.value = '';
+        }
+
+        if(!majorVersion.length && !minorVersion.length) {
+            majorVersion = versionSelector.value.split('.')[0];
+            minorVersion = versionSelector.value.split('.')[1];
+        }
+        
+        fetch(`https://42.pga.sh/api/pga/v1/extensions?architecture=${architecture}&flavor=${flavor}&major=${majorVersion}&minor=${minorVersion}`)
+        .then(response => response.json())
+        .then( (data) => {
+
+            extensionsData = data.extensions;
+            const prevExt = document.getElementById('extensionsList');
+
+            if(prevExt !== null) {
+                prevExt.remove();
+            }
+
+            let extHtml = `
+                    <div class="fields">
+                        <div class="toolbar">
+                            <div class="searchBar extensions form-group relative textCenter">
+                                <input type="text" onkeyup="filterExtensions()" id="searchExtension" name="searchExtension" class="search autoWidth marginAuto" placeholder="Filter extensions..." autocomplete="off">
+                                <button type="button" onclick="clearExtFilter()" id="clearExtensions" class="btn hidden">CLEAR</a>
+                            </div>
+                        </div>
+
+                        <ul class="extensionsList">
+                            <div class="noExtensions ${data.extensions.length && 'hidden'}">
+                                <p class="textCenter">No extensions have been found.</p>
+                            </div>
+                            `;
+
+            data.extensions.forEach( (ext, index) => {
+                if(ext.hasOwnProperty('extensionVersions') && ext.extensionVersions.length) {
+                    extHtml += `
+                        <li class="extension" data-name="${ext.name}">
+                            <label class="name">
+                                ${ext.name}
+                                <input
+                                    type="checkbox"
+                                    class="plain enableExtension"
+                                    onchange="toggleExtension('${ext.name}')"
+                                    value='{"name":"${ext.name}","version":"${ext.extensionVersions[0].version}"}'
+                                />
+                            </label>
+                            <span class="extInfo">
+                                `;
+                    
+                    extHtml += `<span class="hasTooltip">
+                                    <p class="description">
+                                        ${ext.extensionVersions[0].longDescription}
+                                    </p>
+                                </span>
+                                <span class="version form-group hidden">
+                                    <label>
+                                        Version
+                                    </label>
+                                    <select class="extVersion">`;
+                    
+                    ext.extensionVersions.forEach( (version) => {
+                        extHtml += `
+                            <option value="${version.version}">
+                                ${version.version}
+                            </option>
+                        `;
+                    })
+
+                    extHtml += `
+                                    </select>
+                                </span>
+                                <button class="btn fullWidth" onclick="viewExtensionDetails('${ext.name}')">
+                                    More Details
+                                </button>
+                            </span>
+                        </li>
+                    `;
+                }
+            })
+            
+            extHtml += `
+                        </ul>
+                    </div>
+            `;
+
+            const extTemplate = document.createElement('div');
+            extTemplate.innerHTML = extHtml;
+            extTemplate.setAttribute('id', 'extensionsList')
+
+            const extList = document.getElementById('extensions');
+            extList.appendChild(extTemplate);
+            extList.classList.remove('hidden');
+
+            /* const imgDetails = document.getElementById('imageDetails');
+            imgDetails.classList.remove('hidden'); */
+            
+        });
+    }
+
+    function filterExtensions() {
+        const searchExtension = document.getElementById('searchExtension');
+        const extensions = document.querySelectorAll('li.extension');
+        
+        const clearExtensions = document.getElementById('clearExtensions');
+        if(searchExtension.value.length) {
+            clearExtensions.classList.remove('hidden');
+        } else {
+            clearExtensions.classList.add('hidden');
+        }
+        extensions.forEach( (ext) => {
+            if(!ext.dataset.name.toLowerCase().includes(searchExtension.value.toLowerCase())) {
+                ext.classList.add('hidden');
+            } else {
+                ext.classList.remove('hidden');
+            }
+        })
+
+        const hiddenExtensions = document.querySelectorAll('li.extension.hidden');
+        const noExtensions = document.querySelector('.noExtensions');
+        if(extensions.length === hiddenExtensions.length) {
+            noExtensions.classList.remove('hidden');
+        } else {
+            noExtensions.classList.add('hidden');
+        }
+    }
+
+    function clearExtFilter() {
+        const searchExtension = document.getElementById('searchExtension');
+        searchExtension.value = '';
+
+        const clearExtensions = document.getElementById('clearExtensions');
+        clearExtensions.classList.add('hidden');
+
+        filterExtensions();
+    }
+
+    const containersForm = document.querySelector('form#imageForm');
+    containersForm.addEventListener('submit', event => {
+        event.preventDefault();
+    });
+
+    const extensionsPopup = document.querySelector('#extensionsPopup');
+    function viewExtensionDetails(extName) {
+        const extData = extensionsData.find( (ext) => ext.name == extName);
+
+        if(typeof extData !== 'undefined') {
+            const extInfo = document.querySelector('#extensionsPopup .info');
+            let extHtml = `<h3>${extData.name}</h3>`;
+            
+            extData.extensionVersions.forEach( (version) => {
+                extHtml += `
+                    <ul class="small">
+                        <li>
+                            <strong>– v${version.version}:</strong><br/>
+                            <ul>
+                                <li>
+                                    ${version.longDescription}<br/><br/>
+                                </li>
+                                ${
+                                    version.licenses.length 
+                                        ? 
+                                            `
+                                            <li>
+                                                <strong>– Licenses:</strong><br/>
+                                                <ul>
+                                                    <li>${version.licenses}</li>
+                                                </ul>
+                                            </li>
+                                            `
+                                        : ''
+                                }
+                                <li>
+                                    <strong>– Platforms:</strong>
+
+                                    <ul>`;
+                        
+                version.platforms.forEach( (platform) => {
+                    extHtml += '<li>' + platform.os + '/' + platform.architecture + '</li>';
+                });
+
+                extHtml += `
+                                    </ul>
+                                </li>
+
+                                <li>
+                                    <strong>– Repository:</strong>
+                                    <ul>
+                                        <li>
+                                            <strong>– Tag:</strong> ${version.repository.tag}<li>
+                                        <li><strong>– URL:</strong> <a href="${version.repository.url}" target="_blank">${version.repository.url}</a><li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                `;
+            })
+
+            extInfo.innerHTML = extHtml;
+            toggleExtensionsPopup();
+        }
+    } 
+
+    function toggleExtensionsPopup() {
+
+        if(extensionsPopup.classList.contains('hidden')) {
+            extensionsPopup.classList.remove('hidden')
+        } else {
+            extensionsPopup.classList.add('hidden')
+        }
+    }
+</script>
