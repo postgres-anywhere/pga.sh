@@ -77,5 +77,24 @@
     <script src="{{"js/swagger-ui-standalone-preset.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
 
     {{ partial "custom-footer.html" . }}
+
+    <script>
+        let pgaPass = "anywhere";
+
+        if(!localStorage.hasOwnProperty('pgaPass') || (localStorage.pgaPass !== pgaPass)) {
+            (function passcodeprotect() {
+                let passcode = prompt("Enter PassCode");
+                while ( passcode !== pgaPass ) {
+                    alert("Incorrect PassCode");
+                    return passcodeprotect();
+                }
+            }());
+            
+            alert('You may now browse the site');
+            localStorage.setItem('pgaPass', pgaPass)
+        }
+        const body = document.querySelector('body');
+        body.classList.remove('hidden');
+    </script>
   </body>
 </html>
