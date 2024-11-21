@@ -245,8 +245,7 @@ a:hover {
 }
 
 .noMargin {
-    margin-left: 0;
-    margin-right: 0;
+    margin: 0;
 }
 
 .noPadding {
@@ -385,7 +384,7 @@ strong, strong a {
     font-weight: 700;
 }
 
-.btn, .btn:visited, .button, .button:visited {
+.btn:not(.plain), .btn:visited, .button, .button:visited {
     border-radius: 20px;
     border: 0;
     padding: 10px 35px;
@@ -1770,7 +1769,7 @@ input:focus, select:focus {
     border: 1px solid var(--baseLightColor) !important;
 }
 
-.form-group [disabled] {
+.form-group [disabled], .switch [disabled] + span {
     cursor: not-allowed;
     opacity: .5;
 }
@@ -1792,14 +1791,18 @@ input:focus, select:focus {
     padding-left: 12px;
 }
 
+#extensions label.noMargin {
+    margin-bottom: -5px;
+}
+
 li.extension::before {
     display: none !important;
 }
 
 ul.extensionsList {
     padding-left: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    /* display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
     /*grid-template-columns: 1fr 1fr 1fr 1fr;*/
     grid-gap: 20px;
     overflow: auto;
@@ -1810,11 +1813,12 @@ ul.extensionsList {
 
 li.extension {
     border: 1px solid var(--baseLightColor);
-    padding: 30px 10px 10px;
-    border-radius: 5px;
+    padding: 5px 10px 0;
+    border-radius: 0;
     background: rgba(255, 255, 255, .1);
-    display: flex;
-    flex-direction: column-reverse;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: -1px;
 }
 
 li.extension.active {
@@ -1822,18 +1826,68 @@ li.extension.active {
     color: var(--bgColor);
 }
 
-li.extension label.name {
-    position: absolute;
-    top: 5px;
-    left: 10px;
-    width: calc(100% - 10px);
+li.extension.extHeader {
     font-weight: bold;
+}
+
+li.extension.extHeader .name {
+    padding-left: 28px;
+}
+
+li.extension.extHeader .extInfo span.version {
+    float: left;
+}
+
+li.extension label.name, li.extension .name {
+    /* position: absolute;
+    top: 5px;
+    left: 10px; */
+    width: 30%;
+    height: 32px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0;
+}
+
+li.extension label.name span {
+    font-weight: normal;
+    position: relative;
+    top: 4px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: calc(100% - 40px);
+    display: inline-block;
+}
+
+li.extension .extInfo {
+    width: 68%;
+    height: 32px;
+    display: inline-block;
+    overflow: hidden;
+}
+
+li.extension .description p, li.extension select, li.extension .extInfo label {
+    font-size: 80%;
+    line-height: 1.2;
+    margin: 0;
+}
+
+li.extension .description {
+    padding-left: 10px;
+    width: calc(100% - 80px);
+    overflow: hidden;
     cursor: pointer;
 }
 
-li.extension p.description, li.extension select, li.extension .extInfo label {
-    font-size: 80%;
-    line-height: 1.2;
+li.extension .extInfo span.version, li.extension .extInfo span.version select {
+    width: 60px;
+}
+
+li.extension .description p {
+    line-height: 32px;
+    height: 32px;
 }
 
 li.extension hr {
@@ -1858,8 +1912,8 @@ select#version {
 
 input.enableExtension {
     appearance: none;
-    position: absolute;
-    right: 1px;
+    position: relative;
+    left: 0;
     top: 2px;
     background: transparent;
     width: 20px;
@@ -1885,19 +1939,41 @@ input.enableExtension:checked:before {
 li.extension select.extVersion {
     height: auto;
     padding: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 0;
+    width: 60px;
+    position: relative;
+    top: -10px;
+}
+
+li.extension .extInfo > * {
+    display: inline-block;
 }
 
 li.extension .btn {
-    border-radius: 5px !important;
+    position: absolute;
+    top: 2px;
+    right: 0;
+}
+
+li.extension .btn:hover, li.extension.active .btn:hover {
+    color: var(--baseLightColor) !important;
+}
+
+li.extension .btn:focus {
+    color: var(--textColor) !important;
+}
+
+li.extension.active .btn:focus {
+    color: var(--bgColor) !important;
 }
 
 button#clearExtensions {
-    top: -2px;
+    top: 5px;
     border-radius: 5px !important;
     color: var(--bgColor) !important;
-    height: 45px;
-    position: relative;
+    height: 35px;
+    position: absolute;
+    right: 5px;
 }
 
 .highlightable {
@@ -1906,9 +1982,8 @@ button#clearExtensions {
 
 #imageDetails {
     z-index: 2;
-    /* position: sticky; */
+    position: sticky;
     top: 90px;
-    padding: 20px 0;
     background: var(--bgColor);
 }
 
@@ -1950,6 +2025,7 @@ button#clearExtensions {
 
 #imageDetails .copyCode {
     overflow: auto !important;
+    word-wrap: break-word;
 }
 
 #imageUrl {
@@ -1963,29 +2039,25 @@ button#clearExtensions {
     min-width: 200px;
     margin: 0 auto;
     display: inline-block;
-    text-align: center;
+    padding-right: 45px;
 }
 
 #imageForm {
-    padding-top: 10px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--baseLightColor);
 }
 
 #checkout {
-    border: 1px solid var(--baseLightColor);
-    border-radius: 5px;
-    max-width: 30%;
-    margin-left: 2%;
-    background: rgba(255, 255, 255, .1);
-    padding-top: 10px;
-    padding-bottom: 10px;
-    /* position: sticky;
-    top: 130px; */
+    z-index: 2;
+    position: sticky;
+    top: 90px;
+    background: var(--bgColor);
 }
 
 #checkout h3 {
-    margin: 0 0 10px;
-    border-bottom: 1px solid var(--baseLightColor);
-    padding-bottom: 5px;
+    margin: 17px 0 8px;
+    font-size: 1rem;
 }
 
 #checkout td.label {
@@ -1998,7 +2070,7 @@ button#clearExtensions {
 }
 
 #checkout ul ul {
-    padding-left: 10px;
+    padding-left: 15px;
 }
 
 #checkout ul li::before {
@@ -2046,12 +2118,204 @@ table.subTotal {
     font-weight: bold;
 }
 
+#extensions {
+    border: 1px solid var(--baseColor);
+    padding: 10px 20px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
 #extensionsPopup li {
     line-height: normal;
 }
 
 #extensionsPopup li:last-child {
     margin-bottom: 10px;
+}
+
+.form-group.switch {
+    border: 1px solid var(--borderColor);
+    display: inline-block;
+    height: 45px;
+    line-height: 35px;
+    width: auto;
+    position: relative;
+    border-radius: 3px;
+    padding: 0 !important;
+    margin: 0 0 10px;
+}
+
+.switch input[type="radio"] {
+    appearance: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border: 0 !important;
+    cursor: pointer;
+}
+
+.form-group.switch label {
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    width: auto;
+    position: relative;
+}
+
+.switch input + span {
+    line-height: 37px;
+    padding: 0 10px;
+    margin: 3px;
+}
+
+.switch input:checked + span {
+    background: var(--baseLightColor);
+    color: var(--bgColor);
+    display: inline-block;
+    border-radius: 3px;
+}
+
+label.switch input:not(:checked) + span:before {
+    border-right: 1px solid var;
+}
+
+.starOnGithub {
+    background: var(--baseLightColor);
+    padding: 5px 10px;
+    border-radius: 5px;
+    position: relative;
+    top: -8px;
+}
+
+.starOnGithub a {
+    color: var(--bgColor);
+}
+
+.starOnGithub path {
+    fill: var(--bgColor);
+}
+
+li.extension.active select.extVersion {
+    background: #192e2f;
+}
+
+li.extension .extDetails {
+    display: none;
+}
+
+li.extension.open .extDetails {
+    display: inline-block;
+    width: calc(100% + 20px);
+    margin-left: -10px;
+    border-top: 1px solid var(--borderColor);
+    padding: 10px;
+}
+
+li.extension .extDetails ul {
+    padding-left: 10px;
+}
+
+li.extension .extDetails > ul {
+    padding-left: 30px;
+    margin-bottom: 20px;
+}
+
+li.extension.open .btn {
+    transform: rotate(180deg);
+}
+
+li.extension .extDetails li:before, #imageSummary li:before {
+    display: none !important;
+}
+
+#imageSummary {
+    padding: 10px;
+    border-radius: 3px;
+    max-height: calc(100vh - 320px);
+    overflow: auto;
+    width: 100%;
+}
+
+#imageSummary ul {
+    position: relative;
+}
+
+/* #imageSummary > ul > li:not(:first-child) {
+    border-top: 1px solid var(--baseLightColor);
+    padding-top: 10px;
+} */
+
+/* #imageSummary ul li ul:before {
+    content: " ";
+    width: 1px;
+    height: 100%;
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 7px;
+    background: var(--borderColor);
+}
+
+#imageSummary li {
+    position: relative;
+}
+
+#imageSummary li.architectures ul li:before {
+    content: " ";
+    width: 5px;
+    height: 1px;
+    display: block !important;
+    position: absolute;
+    left: -10px;
+    top: 7px;
+    background: var(--borderColor);
+} */
+
+#imageSummary ul ul:before {
+    content: "";
+    display: inline;
+    height: 100%;
+    width: 1px;
+    background: var(--borderColor);
+    position: absolute;
+    top: 0;
+    left: 2px;
+}
+
+#imageSummary > ul ul li:before {
+    content: "";
+    display: inline !important;
+    height: 1px;
+    width: 6px;
+    position: absolute;
+    background: var(--borderColor);
+    border-radius: 0;
+    left: -12px;
+    top: 11px;
+}
+
+#imageSummary ul ul:not(.flavorExtensions):not(.layerDetails):after {
+    content: " ";
+    display: block;
+    width: 5px;
+    height: 100%;
+    background: #192e31;
+    position: absolute;
+    left: 0;
+    top: 12px;
+}
+
+#imageSummary ul.layerDetails li:last-child:after {
+    content: " ";
+    display: block;
+    width: 3px;
+    height: 100%;
+    position: absolute;
+    left: -13px;
+    background: #192e31;
+    top: 12px;
 }
 
 /* Container Override */
