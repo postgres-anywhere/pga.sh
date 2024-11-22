@@ -1985,6 +1985,9 @@ button#clearExtensions {
     position: sticky;
     top: 90px;
     background: var(--bgColor);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--baseLightColor);
 }
 
 .sizeBar {
@@ -2042,22 +2045,26 @@ button#clearExtensions {
     padding-right: 45px;
 }
 
-#imageForm {
+/* #imageForm {
     margin-top: 15px;
     padding-top: 15px;
     border-top: 1px solid var(--baseLightColor);
-}
+} */
 
 #checkout {
-    z-index: 2;
+    /* z-index: 2; */
     position: sticky;
-    top: 90px;
+    top: 190px;
     background: var(--bgColor);
-}
+} 
 
 #checkout h3 {
-    margin: 17px 0 8px;
+    margin: 6px 0 8px;
     font-size: 1rem;
+}
+
+#checkout .imageSize {
+    font-weight: normal;
 }
 
 #checkout td.label {
