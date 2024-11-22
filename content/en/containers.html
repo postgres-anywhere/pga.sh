@@ -7,207 +7,210 @@ breadcrumbs: false
 
 <section id="containers">
     <div class="row">
-        <div class="col-sm-12 marginAuto">
+        <div class="col-sm-10 marginAuto">
             <div class="row align-items-start">
-                <div class="col-sm-12 col-md-8">
-                    <div id="imageDetails" class="row align-items-start">
-                        <div class="col-sm-12">
-                            <div class="fLeft">
-                                <label class="padTopXS">
-                                    Command
-                                </label>
-                                <div class="form-group switch row padXS">
-                                    <label class="monospaced small">
-                                        <input
-                                            type="radio"
-                                            name="command"
-                                            id="command-pull"
-                                            value="docker pull $imageURL"
-                                            checked
-                                            onchange="updateCommand()"
-                                        />
-                                        <span>pull</span>
-                                    </label>
-                                    <label class="monospaced small">
-                                        <input
-                                            type="radio"
-                                            name="command"
-                                            id="command-run"
-                                            value="docker run --rm --name pg -d -e POSTGRES_PASSWORD=pwd $imageURL
-        
-            docker exec -it pg psql postgres postgres"
-                                            onchange="updateCommand()"
-                                        />
-                                        <span>run</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="fRight">
-                                <label class="padTopXS">
-                                    Image
-                                </label>
-                                <div class="form-group switch row padXS">
-                                    <label class="monospaced small">
-                                        <input
-                                            type="radio"
-                                            name="image"
-                                            id="image-canonical"
-                                            value="canonical"
-                                            checked
-                                            onchange="updateCommand()"
-                                        />
-                                        <span>canonical</span>
-                                    </label>
-                                    <label class="monospaced small">
-                                        <input
-                                            type="radio"
-                                            name="image"
-                                            id="image-digest"
-                                            value="digest"
-                                            onchange="updateCommand()"
-                                        />
-                                        <span>digest</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="clearfix"></div>
-                            
-                            <pre class="col-sm-12 copyCode fullWidth">
-                                <code 
-                                    id="imageUrl"
-                                    data-url="42.pga.sh/pga/f/postgres"
-                                    data-urlDigest=""
-                                >
-                                    docker pull 42.pga.sh/pga/f/postgres
-                                </code>
-                            </pre>
-                        </div>
-                    </div>
-                    <form id="imageForm" class="col-sm-12">
-                        <div class="clearfix"></div><br>
-                        <div class="form-group col-xs-12 col-sm-6 hidden">
-                            <label>
-                                Platform
-                            </label>
-                            <div id="platformContainer" class="row"></div>
-                        </div>
-                        <div class="form-group col-xs-12 col-sm-6 hidden">
-                            <label>
-                                Flavor
-                            </label>
-                            <select name="flavor" id="flavor" class="getOptions">
-                                <option value="">Choose flavor...</option>
-                                <option value="postgres" selected>Postgres</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-xs-12 col-sm-6 hidden">
-                            <label>
-                                T-Shirt Size
-                            </label>
-                            <select name="tshirt-size" id="tshirt-size" class="getOptions">
-                                <option value="">Choose size...</option>
-                                <option value="m" selected>M</option>
-                            </select>
-                        </div>
-                        <div class="form-group fLeft">
-                            <label>
-                                Postgres Version
-                            </label>
-                            <select
-                                name="version"
-                                id="version"
-                                class="getExtensions autoWidth"
-                                onchange="getExtensions(); getImageUrl();"
-                                disabled
-                            >
-                                <option disabled>Choose version...</option>
-                            </select>
-                        </div>
-                        <div class="fRight">
-                            <label>
-                                Patroni
+                <div id="imageDetails" class="col-sm-12 align-items-start">
+                    <div class="col-sm-12">
+                        <div class="fLeft">
+                            <label class="padTopXS">
+                                Command
                             </label>
                             <div class="form-group switch row padXS">
                                 <label class="monospaced small">
                                     <input
                                         type="radio"
-                                        name="patroni"
-                                        id="patroni-enable"
-                                        value="enable"
-                                        onchange="getImageUrl()"
+                                        name="command"
+                                        id="command-pull"
+                                        value="docker pull $imageURL"
+                                        checked
+                                        onchange="updateCommand()"
                                     />
-                                    <span>Enable</span>
+                                    <span>pull</span>
                                 </label>
                                 <label class="monospaced small">
                                     <input
                                         type="radio"
-                                        name="patroni"
-                                        id="patroni-disable"
-                                        value="disable"
-                                        checked
-                                        onchange="getImageUrl()"
+                                        name="command"
+                                        id="command-run"
+                                        value="docker run --rm --name pg -d -e POSTGRES_PASSWORD=pwd $imageURL
+    
+        docker exec -it pg psql postgres postgres"
+                                        onchange="updateCommand()"
                                     />
-                                    <span>Disable</span>
+                                    <span>run</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="fRight">
+                            <label class="padTopXS">
+                                Image
+                            </label>
+                            <div class="form-group switch row padXS">
+                                <label class="monospaced small">
+                                    <input
+                                        type="radio"
+                                        name="image"
+                                        id="image-canonical"
+                                        value="canonical"
+                                        checked
+                                        onchange="updateCommand()"
+                                    />
+                                    <span>canonical</span>
+                                </label>
+                                <label class="monospaced small">
+                                    <input
+                                        type="radio"
+                                        name="image"
+                                        id="image-digest"
+                                        value="digest"
+                                        onchange="updateCommand()"
+                                    />
+                                    <span>digest</span>
                                 </label>
                             </div>
                         </div>
 
                         <div class="clearfix"></div>
-
-                        <div id="extensions" class="col-sm-12 hidden">
-                            <div class="fLeft">
-                                <label class="noMargin">
-                                    Extensions
-                                </label>
-                                <span class="small">
-                                    Select the extensions you would like to install
-                                </span>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div id="checkout" class="col-sm-12 col-md-4">
-                    <h3>
-                        Image Details
-                        <span class="starOnGithub fRight small">
-                            <a href="https://github.com/postgres-anywhere" title="Star on GitHub" target="_blank">
-                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="13.998" height="13.398" viewBox="0 0 13.998 13.398"><path d="M7.69.465,5.981,3.929l-3.823.557A.838.838,0,0,0,1.7,5.915L4.461,8.61l-.654,3.807a.837.837,0,0,0,1.214.882l3.42-1.8,3.42,1.8a.837.837,0,0,0,1.214-.882L12.42,8.61l2.766-2.695a.838.838,0,0,0-.463-1.429L10.9,3.929,9.191.465a.838.838,0,0,0-1.5,0Z" transform="translate(-1.441 0.001)" fill="url(#a)"></path></svg>
-                                Star on GitHub
-                            </a>
-                        </span>
-                    </h3>
-                    <div id="imageSummary" class="box">
-                        <!--<ul class="small">
-                            
-                            <li class="architectures">
-                                <strong class="label">
-                                    Architecture
-                                </strong>
-                                <ul></ul>
-                            </li>
-                            <li class="addons hidden">
-                                <strong class="label">
-                                    Addons
-                                </strong>
-                                <ul></ul>
-                            </li>
-                            <li class="flavorVersions">
-                                <strong class="label">
-                                    Flavor Version
-                                </strong>
-                                <ul></ul>
-                            </li>
-                            <li class="flavorExtensions hidden">
-                                <strong class="label">
-                                    Extensions
-                                </strong>
-                                <ul></ul>
-                            </li>
-                            
-                        </ul>-->
+                        
+                        <pre class="col-sm-12 copyCode fullWidth">
+                            <code 
+                                id="imageUrl"
+                                data-url="42.pga.sh/pga/f/postgres"
+                                data-urlDigest=""
+                            >
+                                docker pull 42.pga.sh/pga/f/postgres
+                            </code>
+                        </pre>
                     </div>
                 </div>
+                <div class="col-sm-12">
+                    <div class="row">
+                        <form id="imageForm" class="col-sm-12 col-md-8">
+                            <div class="form-group col-xs-12 col-sm-6 hidden">
+                                <label>
+                                    Platform
+                                </label>
+                                <div id="platformContainer" class="row"></div>
+                            </div>
+                            <div class="form-group col-xs-12 col-sm-6 hidden">
+                                <label>
+                                    Flavor
+                                </label>
+                                <select name="flavor" id="flavor" class="getOptions">
+                                    <option value="">Choose flavor...</option>
+                                    <option value="postgres" selected>Postgres</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-xs-12 col-sm-6 hidden">
+                                <label>
+                                    T-Shirt Size
+                                </label>
+                                <select name="tshirt-size" id="tshirt-size" class="getOptions">
+                                    <option value="">Choose size...</option>
+                                    <option value="m" selected>M</option>
+                                </select>
+                            </div>
+                            <div class="form-group fLeft">
+                                <label>
+                                    Postgres Version
+                                </label>
+                                <select
+                                    name="version"
+                                    id="version"
+                                    class="getExtensions autoWidth"
+                                    onchange="getExtensions(); getImageUrl();"
+                                    disabled
+                                >
+                                    <option disabled>Choose version...</option>
+                                </select>
+                            </div>
+                            <div class="fRight">
+                                <label>
+                                    Patroni
+                                </label>
+                                <div class="form-group switch row padXS">
+                                    <label class="monospaced small">
+                                        <input
+                                            type="radio"
+                                            name="patroni"
+                                            id="patroni-enable"
+                                            value="enable"
+                                            onchange="getImageUrl()"
+                                        />
+                                        <span>Enable</span>
+                                    </label>
+                                    <label class="monospaced small">
+                                        <input
+                                            type="radio"
+                                            name="patroni"
+                                            id="patroni-disable"
+                                            value="disable"
+                                            checked
+                                            onchange="getImageUrl()"
+                                        />
+                                        <span>Disable</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="clearfix"></div>
+
+                            <div id="extensions" class="col-sm-12 hidden">
+                                <div class="fLeft">
+                                    <label class="noMargin">
+                                        Extensions
+                                    </label>
+                                    <span class="small">
+                                        Select the extensions you would like to install
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div id="checkout" class="col-sm-12 col-md-4">
+                            <h3>
+                                Image Details <span class="imageSize monospaced"></span>
+                                <span class="starOnGithub fRight small">
+                                    <a href="https://github.com/postgres-anywhere" title="Star on GitHub" target="_blank">
+                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="13.998" height="13.398" viewBox="0 0 13.998 13.398"><path d="M7.69.465,5.981,3.929l-3.823.557A.838.838,0,0,0,1.7,5.915L4.461,8.61l-.654,3.807a.837.837,0,0,0,1.214.882l3.42-1.8,3.42,1.8a.837.837,0,0,0,1.214-.882L12.42,8.61l2.766-2.695a.838.838,0,0,0-.463-1.429L10.9,3.929,9.191.465a.838.838,0,0,0-1.5,0Z" transform="translate(-1.441 0.001)" fill="url(#a)"></path></svg>
+                                        Star on GitHub
+                                    </a>
+                                </span>
+                            </h3>
+                            <div id="imageSummary" class="box">
+                                <!--<ul class="small">
+                                    
+                                    <li class="architectures">
+                                        <strong class="label">
+                                            Architecture
+                                        </strong>
+                                        <ul></ul>
+                                    </li>
+                                    <li class="addons hidden">
+                                        <strong class="label">
+                                            Addons
+                                        </strong>
+                                        <ul></ul>
+                                    </li>
+                                    <li class="flavorVersions">
+                                        <strong class="label">
+                                            Flavor Version
+                                        </strong>
+                                        <ul></ul>
+                                    </li>
+                                    <li class="flavorExtensions hidden">
+                                        <strong class="label">
+                                            Extensions
+                                        </strong>
+                                        <ul></ul>
+                                    </li>
+                                    
+                                </ul>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
     </div>
 </section>
@@ -357,6 +360,8 @@ breadcrumbs: false
             
             const imageSummary = document.querySelector('#imageSummary');
             var imageSummaryHtml = '<ul class="small">';
+
+            let imageSize = 0;
             
             Object.keys(data.image.base.layers).forEach( (layer, index) => {
                 imageSummaryHtml += `
@@ -371,10 +376,14 @@ breadcrumbs: false
                                 <ul>                      
                     `;
 
+                imageSize += data.image.base.layers[layer].size;
+
                 data.image.flavor.versions.forEach( (version) => {
                     imageSummaryHtml += `
                         <li>
                             <strong>${version.majorVersion}.${version.minorVersion}</strong>: ${(version.layers[layer].size / 1000000).toFixed(2)}MB`;
+
+                    imageSize += version.layers[layer].size;
 
                     if(version.extensions.length) {
                         imageSummaryHtml += `
@@ -390,7 +399,9 @@ breadcrumbs: false
                                 <li>
                                     <strong>${ext.name} (${ext.version}):</strong> ${(ext.layers[layer].size / 1000000).toFixed(2)}MB
                                 </li>`;
+                            imageSize += ext.layers[layer].size;
                         });
+
                         imageSummaryHtml += `
                                 </ul>
                             </li>
@@ -417,6 +428,8 @@ breadcrumbs: false
                             <li>
                                 <strong>${addon.name} (${addon.version})</strong>: ${(addon.layers[layer].size / 1000000).toFixed(2)}MB
                             </li>`;
+                        
+                        imageSize += addon.layers[layer].size;
                     });
                     imageSummaryHtml += `
                         </ul>
@@ -426,9 +439,11 @@ breadcrumbs: false
                 
                 imageSummaryHtml += '</ul>'
             });
-            console.log(imageSummaryHtml)
 
             imageSummary.innerHTML = imageSummaryHtml;
+
+            const imageSizeContainer = document.querySelector('.imageSize');
+            imageSizeContainer.innerHTML = `(${(imageSize / 1000000).toFixed(2)}MB)`;
 
             /* let imageSize = {
                 total: 0,
