@@ -15,7 +15,7 @@ breadcrumbs: false
                             <label class="padTopXS">
                                 Command
                             </label>
-                            <div class="form-group switch row padXS">
+                            <div class="form-group switch row">
                                 <label class="monospaced small">
                                     <input
                                         type="radio"
@@ -75,11 +75,9 @@ breadcrumbs: false
                         <pre class="col-sm-12 copyCode fullWidth">
                             <code 
                                 id="imageUrl"
-                                data-url="42.pga.sh/pga/f/postgres"
+                                data-url="42.pga.sh/postgres"
                                 data-urlDigest=""
-                            >
-                                docker pull 42.pga.sh/pga/f/postgres
-                            </code>
+                            >docker pull 42.pga.sh/postgres</code>
                         </pre>
                     </div>
                 </div>
@@ -124,18 +122,29 @@ breadcrumbs: false
                                     <option disabled>Choose version...</option>
                                 </select>
                             </div>
+                            <div class="patroniVersionsContainer form-group fRight padXS hidden">
+                                <label>
+                                    Patroni Version
+                                </label>
+                                <select
+                                    name="patroni-version"
+                                    id="patroniVersion"
+                                    onchange=" getImageUrl()"
+                                >
+                                </select>
+                            </div>
                             <div class="fRight">
                                 <label>
                                     Patroni
                                 </label>
-                                <div class="form-group switch row padXS">
+                                <div class="form-group switch">
                                     <label class="monospaced small">
                                         <input
                                             type="radio"
                                             name="patroni"
                                             id="patroni-enable"
                                             value="enable"
-                                            onchange="getImageUrl()"
+                                            onchange="togglePatroniVersions(); getImageUrl()"
                                         />
                                         <span>Enable</span>
                                     </label>
@@ -146,7 +155,7 @@ breadcrumbs: false
                                             id="patroni-disable"
                                             value="disable"
                                             checked
-                                            onchange="getImageUrl()"
+                                            onchange="togglePatroniVersions(); getImageUrl()"
                                         />
                                         <span>Disable</span>
                                     </label>
@@ -169,44 +178,9 @@ breadcrumbs: false
 
                         <div id="checkout" class="col-sm-12 col-md-4">
                             <h3>
-                                Image Details <span class="imageSize monospaced"></span>
-                                <span class="starOnGithub fRight small">
-                                    <a href="https://github.com/postgres-anywhere" title="Star on GitHub" target="_blank">
-                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="13.998" height="13.398" viewBox="0 0 13.998 13.398"><path d="M7.69.465,5.981,3.929l-3.823.557A.838.838,0,0,0,1.7,5.915L4.461,8.61l-.654,3.807a.837.837,0,0,0,1.214.882l3.42-1.8,3.42,1.8a.837.837,0,0,0,1.214-.882L12.42,8.61l2.766-2.695a.838.838,0,0,0-.463-1.429L10.9,3.929,9.191.465a.838.838,0,0,0-1.5,0Z" transform="translate(-1.441 0.001)" fill="url(#a)"></path></svg>
-                                        Star on GitHub
-                                    </a>
-                                </span>
+                                Image Details
                             </h3>
-                            <div id="imageSummary" class="box">
-                                <!--<ul class="small">
-                                    
-                                    <li class="architectures">
-                                        <strong class="label">
-                                            Architecture
-                                        </strong>
-                                        <ul></ul>
-                                    </li>
-                                    <li class="addons hidden">
-                                        <strong class="label">
-                                            Addons
-                                        </strong>
-                                        <ul></ul>
-                                    </li>
-                                    <li class="flavorVersions">
-                                        <strong class="label">
-                                            Flavor Version
-                                        </strong>
-                                        <ul></ul>
-                                    </li>
-                                    <li class="flavorExtensions hidden">
-                                        <strong class="label">
-                                            Extensions
-                                        </strong>
-                                        <ul></ul>
-                                    </li>
-                                    
-                                </ul>-->
-                            </div>
+                            <div id="imageSummary" class="box"></div>
                         </div>
                     </div>
                 </div>
@@ -227,9 +201,9 @@ breadcrumbs: false
     const platformContainer = document.getElementById('platformContainer');
     const optionsGetters = document.querySelectorAll(".getOptions");
     const versionSelector = document.getElementById('version');
-    const extensionsList = document.getElementById('extensionsList');
-    var extensionsData = null;
-            
+    const patroniVersions = document.querySelector('#patroniVersion');
+    const patroniVersionsContainer = document.querySelector('.patroniVersionsContainer');
+    const extensionsList = {};            
 
     function addOption(selectId, optionValue, optionText, selected = false) {
         // Get the select element
@@ -275,6 +249,7 @@ breadcrumbs: false
         const extCheckbox = document.querySelector(`li.extension[data-name=${extName}] input.enableExtension`);
 
         extCheckbox.value = `{"name":"${extName}","version":"${extVersion.value}"}`;
+        getImageUrl();
     }
 
     // Update command with cached data
@@ -288,6 +263,14 @@ breadcrumbs: false
                 ? imageUrl.dataset.url
                 : imageUrl.dataset.urlDigest
         );
+    }
+
+    function getSize(size) {
+        return  (size / 1000000).toFixed(2);
+    }
+
+    function getPercentage(sub, total) {
+        return Math.round( (100 * sub) / total );
     }
 
     // Get image URL
@@ -333,7 +316,10 @@ breadcrumbs: false
                 ...( (patroni.value === 'enable') && {
                     'addons': [
                         {
-                            'name': 'patroni'
+                            'name': 'patroni',
+                            ...( !patroniVersions.options[patroniVersions.selectedIndex].text.startsWith('latest') && {
+                                version: patroniVersions.value
+                            })
                         }
                     ]
                 })
@@ -359,91 +345,133 @@ breadcrumbs: false
             updateCommand();
             
             const imageSummary = document.querySelector('#imageSummary');
-            var imageSummaryHtml = '<ul class="small">';
+            var imageSummaryHtml = `
+                <ul class="small">
+                    <li>
+                        <strong>Components</strong>
+
+                        <ul class="components layerDetails">
+                            <li>
+                                Postgres (${data.image.flavor.versions[0].majorVersion}.${data.image.flavor.versions[0].minorVersion})
+                            </li>
+            `;
+
+            if(data.image.flavor.versions[0].extensions.length) {
+                imageSummaryHtml += `
+                            <li>
+                                Extensions
+
+                                <ul class="flavorExtensions">
+                `;
+                
+                data.image.flavor.versions[0].extensions.forEach( (ext) => {
+                    imageSummaryHtml += `
+                                    <li>
+                                        ${ext.name} (${ext.version})
+                                    </li>
+                    `;
+                });
+
+                imageSummaryHtml += `
+                                </ul>
+                            </li>
+                `;
+            }
+
+            if(data.image.addons.length) {
+
+                data.image.addons.forEach( (addon) => {
+                    imageSummaryHtml += `
+                            <li class="capitalFirstLetter">
+                                ${addon.name} (${addon.version})
+                            </li>
+                    `;
+                })
+            }
+
+            imageSummaryHtml += `
+                        </ul>
+                    </li>
+
+                    <li>
+                        <strong>Architectures, Image Size</strong>
+
+                        <ul class="imageSize layerDetails">
+            `;
+                            
+            data.image.platforms.forEach( (platform) => {
+
+                let extensionsSize = 0;
+                if(data.image.flavor.versions[0].extensions.length) {
+                    data.image.flavor.versions[0].extensions.forEach( (ext) => {
+                        extensionsSize += ext.layers[platform.name].size
+                    });
+                }
+
+                let platftormSize = {
+                    base: getSize(data.image.base.layers[platform.name].size),
+                    postgres: getSize(data.image.flavor.versions[0].layers[platform.name].size),
+                    extensions: getSize(extensionsSize)
+                };
+
+                platftormSize['platform'] = (
+                    parseFloat(platftormSize.postgres) + 
+                    parseFloat(platftormSize.base) +
+                    parseFloat(platftormSize.extensions)
+                ).toFixed(2);
+                
+
+                imageSummaryHtml += `
+                        <li>
+                            <strong class="uppercase">${platform.architecture}: ${platftormSize.platform}MB</strong>
+
+                            <ul class="layerDetails">
+                                <li>
+                                    <strong>
+                                        Base:
+                                    </strong>
+                                    ${platftormSize.base}MB
+                                    (${getPercentage(platftormSize.base, platftormSize.platform)}%)
+                                </li>
+                                <li>
+                                    <strong>
+                                        Postgres:
+                                    </strong>
+                                    ${platftormSize.postgres}MB
+                                    (${getPercentage(platftormSize.postgres, platftormSize.platform)}%)
+                                </li>
+                `;
+
+                if(extensionsSize) {
+                    imageSummaryHtml += `
+                                <li>
+                                    <strong>Extensions:
+                                    </strong>
+                                    ${platftormSize.extensions}MB
+                                    (${getPercentage(platftormSize.extensions, platftormSize.platform)}%)
+                                </li>
+                    `;
+                }
+
+                imageSummaryHtml += `
+                            </ul>
+                        </li>
+                `;
+            })
+
+            imageSummaryHtml += `
+                        </ul>
+                    </li>
+                </ul>
+            `;
 
             let imageSize = 0;
             
-            Object.keys(data.image.base.layers).forEach( (layer, index) => {
-                imageSummaryHtml += `
-                    <li>
-                        <strong>${layer}</strong>: ${(data.image.base.layers[layer].size / 1000000).toFixed(2)}MB
-
-                        <ul class="layerDetails">
-                            <li class="flavorVersions">
-                                <strong class="label">
-                                    Flavor Version
-                                </strong>
-                                <ul>                      
-                    `;
-
-                imageSize += data.image.base.layers[layer].size;
-
-                data.image.flavor.versions.forEach( (version) => {
-                    imageSummaryHtml += `
-                        <li>
-                            <strong>${version.majorVersion}.${version.minorVersion}</strong>: ${(version.layers[layer].size / 1000000).toFixed(2)}MB`;
-
-                    imageSize += version.layers[layer].size;
-
-                    if(version.extensions.length) {
-                        imageSummaryHtml += `
-                            <ul>
-                                <li>
-                                    <strong class="label">
-                                        Extensions
-                                    </strong>
-                                    <ul class="flavorExtensions">`;
-                        
-                        version.extensions.forEach( (ext) => {
-                            imageSummaryHtml += `
-                                <li>
-                                    <strong>${ext.name} (${ext.version}):</strong> ${(ext.layers[layer].size / 1000000).toFixed(2)}MB
-                                </li>`;
-                            imageSize += ext.layers[layer].size;
-                        });
-
-                        imageSummaryHtml += `
-                                </ul>
-                            </li>
-                        </ul>`;
-                    }
-
-                    imageSummaryHtml += `
-                            </li><!-- Close Version -->
-                        </ul><!-- Close Flavors -->
-                    </li><!-- Close FlavorVersions -->`;
-                })
-
-
-                if(data.image.addons.length) {
-                    imageSummaryHtml += `
-                        <li class="addons">
-                            <strong class="label">
-                                Addons
-                            </strong>
-                            <ul>
-                    `;
-                    data.image.addons.forEach( (addon) => {
-                        imageSummaryHtml += `
-                            <li>
-                                <strong>${addon.name} (${addon.version})</strong>: ${(addon.layers[layer].size / 1000000).toFixed(2)}MB
-                            </li>`;
-                        
-                        imageSize += addon.layers[layer].size;
-                    });
-                    imageSummaryHtml += `
-                        </ul>
-                    </li>
-                    `;
-                }
-                
-                imageSummaryHtml += '</ul>'
-            });
-
+            
             imageSummary.innerHTML = imageSummaryHtml;
 
-            const imageSizeContainer = document.querySelector('.imageSize');
-            imageSizeContainer.innerHTML = `(${(imageSize / 1000000).toFixed(2)}MB)`;
+            /* const imageSizeContainer = document.querySelector('.imageSize');
+            imageSizeContainer.innerHTML = `(${(imageSize / 1000000).toFixed(2)}MB)`; */
 
             /* let imageSize = {
                 total: 0,
@@ -481,6 +509,41 @@ breadcrumbs: false
         });
     }
 
+    function togglePatroniVersions() {
+        patroniVersionsContainer.classList.toggle('hidden');
+        patroniVersions.selectedIndex = 1;
+    }
+
+    function getAddons() {
+        // Get available addons
+        fetch('https://42.pga.sh/api/pga/v1/addons?flavor=postgres')
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+
+            const patroni = data.addons.find( (addon) => (addon.name === 'patroni'));
+
+            if( (typeof patroni !== 'undefined') && patroni.versions.length) {
+                let patroniVersionHtml = `
+                    <option disabled>Choose version...</option>
+                    <option value="${patroni.versions[0].version}">
+                        latest (${patroni.versions[0].version})
+                    </option>
+                `;
+
+                patroni.versions.forEach( (version, index) => {
+                    patroniVersionHtml += `
+                        <option>
+                            ${version.version}
+                        </option>
+                    `;
+                })
+
+                patroniVersions.innerHTML = patroniVersionHtml;
+            }
+        });
+    }
+    
     // Get available platforms
     fetch('https://42.pga.sh/api/pga/v1/platforms')
     .then(response => response.json())
@@ -508,9 +571,10 @@ breadcrumbs: false
     )
     .then(
         getImageUrl()
-    ).then(
-        getVersions()
-    );
+    ).then( () => {
+        getVersions();
+        getAddons();
+    });
 
     /*optionsGetters.forEach( (getter) => {
         getter.addEventListener("change", (event) => {
@@ -555,15 +619,174 @@ breadcrumbs: false
         });
     }); */
 
-    function getExtensions(architecture = 'amd64', flavor = 'postgres', majorVersion = '', minorVersion = '') {
+    function getDefaultExtEnabled() {
+        const selectedExtensions = [...document.querySelectorAll('li.extension.active')].map((ext) => ext.dataset.name);
+        let defaultExtEnabled = [];
 
+        selectedExtensions.forEach((ext) => {
+            let extVersions = document.querySelector(`li.extension[data-name=${ext}] select.extVersion`)
+            if(!extVersions.selectedIndex) {
+                defaultExtEnabled.push(ext);
+            }
+        })
+
+        return defaultExtEnabled
+    }
+
+    function parseExtensionsData(version, extData = null) {
+
+        if(!extData && extensionsList.hasOwnProperty(version)) {
+            extData = extensionsList[version];
+        }
+
+        const defaultExtEnabled = getDefaultExtEnabled();
+        
+        let extHtml = `
+            <div class="fields">
+                <div class="toolbar">
+                    <div class="searchBar extensions form-group relative">
+                        <input type="text" onkeyup="filterExtensions()" id="searchExtension" name="searchExtension" class="search fRight autoWidth" placeholder="Filter extensions..." autocomplete="off">
+                        <button type="button" onclick="clearExtFilter()" id="clearExtensions" class="btn hidden">CLEAR</a>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+
+                <ul class="extensionsList">
+                    <div class="noExtensions ${extData.length && 'hidden'}">
+                        <p class="textCenter">No extensions have been found.</p>
+                    </div>
+                    <li class="extension extHeader">
+                        <span class="name">
+                            Name
+                        </span>
+                        <span class="extInfo">
+                            <span class="version">
+                                Version
+                            </span>
+                            <span class="description">
+                                Description
+                            </span>
+                        </span>
+                    </li>
+                    `;
+
+        extData.forEach( (ext, index) => {
+            if(ext.hasOwnProperty('extensionVersions') && ext.extensionVersions.length) {
+                extHtml += `
+                    <li class="extension ${defaultExtEnabled.includes(ext.name) ? 'active' : ''}" data-name="${ext.name}">
+                        <label class="name">
+                            <input
+                                type="checkbox"
+                                class="plain enableExtension"
+                                onchange="toggleExtension('${ext.name}')"
+                                value='{"name":"${ext.name}"}'
+                                ${defaultExtEnabled.includes(ext.name) ? 'checked' : ''}
+                            />
+                            <span>${ext.name}</span>
+                        </label>
+                        <span class="extInfo">
+                            <span class="version form-group">
+                                <select
+                                    class="extVersion"
+                                    onchange="setExtensionVersion('${ext.name}')"
+                                >`;
+                
+                ext.extensionVersions.forEach( (version) => {
+                    extHtml += `
+                        <option value="${version.version}">
+                            ${version.version}
+                        </option>
+                    `;
+                })
+
+                extHtml += `
+                                </select>
+                            </span>
+                            <span
+                                class="description hasTooltip"
+                                onclick="toggleExtension('${ext.name}', true)"
+                            >
+                                <p>
+                                    ${ext.extensionVersions[0].longDescription}
+                                </p>
+                            </span>
+                            <button class="btn plain" onclick="viewExtensionDetails('${ext.name}')">▾</button>
+                        </span>
+                        <div class="extDetails">`;
+
+                            ext.extensionVersions.forEach( (version) => {
+                                extHtml += `
+                                    <ul class="small">
+                                        <li>
+                                            <strong>– v${version.version}:</strong> ${version.longDescription}<br/>
+                                            <ul>
+                                                ${
+                                                    version.licenses.length 
+                                                        ? 
+                                                            `
+                                                            <li>
+                                                                <strong>– Licenses:</strong><br/>
+                                                                <ul>
+                                                                    <li>${version.licenses}</li>
+                                                                </ul>
+                                                            </li>
+                                                            `
+                                                        : ''
+                                                }
+                                                <li>
+                                                    <strong>– Platforms:</strong>
+
+                                                    <ul>`;
+                                        
+                                version.platforms.forEach( (platform) => {
+                                    extHtml += '<li>' + platform.os + '/' + platform.architecture + '</li>';
+                                });
+
+                                extHtml += `
+                                                    </ul>
+                                                </li>
+
+                                                <li>
+                                                    <strong>– Repository:</strong>
+                                                    <ul>
+                                                        <li>
+                                                            <strong>– Tag:</strong> ${version.repository.tag}<li>
+                                                        <li><strong>– URL:</strong> <a href="${version.repository.url}" target="_blank">${version.repository.url}</a><li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                `;
+                            });
+                        extHtml += `  
+                        </div>
+                    </li>
+                `;
+            }
+        })
+        
+        extHtml += `
+                    </ul>
+                </div>
+        `;
+
+        // Remove previous extensions container if exists 
         const prevExt = document.getElementById('extensionsList');
-
         if(prevExt !== null) {
             prevExt.remove();
         }
 
-        extensionsData = null;
+        const extTemplate = document.createElement('div');
+        extTemplate.innerHTML = extHtml;
+        extTemplate.setAttribute('id', 'extensionsList')
+
+        const extList = document.getElementById('extensions');
+        extList.appendChild(extTemplate);
+        extList.classList.remove('hidden');
+    }
+
+    function getExtensions(architecture = 'amd64', flavor = 'postgres', majorVersion = '', minorVersion = '') {
 
         const searchExtension = document.getElementById('searchExtension');
         if(searchExtension) {
@@ -574,159 +797,25 @@ breadcrumbs: false
             majorVersion = versionSelector.value.split('.')[0];
             minorVersion = versionSelector.value.split('.')[1];
         }
+
+        if(extensionsList.hasOwnProperty(majorVersion + '.' + minorVersion)) {
+            parseExtensionsData(majorVersion + '.' + minorVersion);
+        } else {
+            fetch(`https://42.pga.sh/api/pga/v1/extensions?architecture=${architecture}&flavor=${flavor}&major=${majorVersion}&minor=${minorVersion}`)
+            .then(response => response.json())
+            .then( (data) => {
+                extensionsList[majorVersion + '.' + minorVersion] = data.extensions;
+                parseExtensionsData(majorVersion + '.' + minorVersion, data.extensions);
+            });
         
-        fetch(`https://42.pga.sh/api/pga/v1/extensions?architecture=${architecture}&flavor=${flavor}&major=${majorVersion}&minor=${minorVersion}`)
-        .then(response => response.json())
-        .then( (data) => {
-
-            extensionsData = data.extensions;
-
-            let extHtml = `
-                    <div class="fields">
-                        <div class="toolbar">
-                            <div class="searchBar extensions form-group relative">
-                                <input type="text" onkeyup="filterExtensions()" id="searchExtension" name="searchExtension" class="search fRight autoWidth" placeholder="Filter extensions..." autocomplete="off">
-                                <button type="button" onclick="clearExtFilter()" id="clearExtensions" class="btn hidden">CLEAR</a>
-                            </div>
-                        </div>
-                        <div class="clearfix"></div>
-
-                        <ul class="extensionsList">
-                            <div class="noExtensions ${data.extensions.length && 'hidden'}">
-                                <p class="textCenter">No extensions have been found.</p>
-                            </div>
-                            <li class="extension extHeader">
-                                <span class="name">
-                                    Name
-                                </span>
-                                <span class="extInfo">
-                                    <span class="version">
-                                        Version
-                                    </span>
-                                    <span class="description">
-                                        Description
-                                    </span>
-                                </span>
-                            </li>
-                            `;
-
-            data.extensions.forEach( (ext, index) => {
-                if(ext.hasOwnProperty('extensionVersions') && ext.extensionVersions.length) {
-                    extHtml += `
-                        <li class="extension" data-name="${ext.name}">
-                            <label class="name">
-                                <input
-                                    type="checkbox"
-                                    class="plain enableExtension"
-                                    onchange="toggleExtension('${ext.name}')"
-                                    value='{"name":"${ext.name}"}'
-                                />
-                                <span>${ext.name}</span>
-                            </label>
-                            <span class="extInfo">
-                                <span class="version form-group">
-                                    <select
-                                        class="extVersion"
-                                        onchange="setExtensionVersion('${ext.name}')"
-                                    >`;
-                    
-                    ext.extensionVersions.forEach( (version) => {
-                        extHtml += `
-                            <option value="${version.version}">
-                                ${version.version}
-                            </option>
-                        `;
-                    })
-
-                    extHtml += `
-                                    </select>
-                                </span>
-                                <span
-                                    class="description hasTooltip"
-                                    onclick="toggleExtension('${ext.name}', true)"
-                                >
-                                    <p>
-                                        ${ext.extensionVersions[0].longDescription}
-                                    </p>
-                                </span>
-                                <button class="btn plain" onclick="viewExtensionDetails('${ext.name}')">▾</button>
-                            </span>
-                            <div class="extDetails">`;
-
-                                ext.extensionVersions.forEach( (version) => {
-                                    extHtml += `
-                                        <ul class="small">
-                                            <li>
-                                                <strong>– v${version.version}:</strong> ${version.longDescription}<br/>
-                                                <ul>
-                                                    ${
-                                                        version.licenses.length 
-                                                            ? 
-                                                                `
-                                                                <li>
-                                                                    <strong>– Licenses:</strong><br/>
-                                                                    <ul>
-                                                                        <li>${version.licenses}</li>
-                                                                    </ul>
-                                                                </li>
-                                                                `
-                                                            : ''
-                                                    }
-                                                    <li>
-                                                        <strong>– Platforms:</strong>
-
-                                                        <ul>`;
-                                            
-                                    version.platforms.forEach( (platform) => {
-                                        extHtml += '<li>' + platform.os + '/' + platform.architecture + '</li>';
-                                    });
-
-                                    extHtml += `
-                                                        </ul>
-                                                    </li>
-
-                                                    <li>
-                                                        <strong>– Repository:</strong>
-                                                        <ul>
-                                                            <li>
-                                                                <strong>– Tag:</strong> ${version.repository.tag}<li>
-                                                            <li><strong>– URL:</strong> <a href="${version.repository.url}" target="_blank">${version.repository.url}</a><li>
-                                                        </ul>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    `;
-                                });
-                            extHtml += `  
-                            </div>
-                        </li>
-                    `;
-                }
-            })
-            
-            extHtml += `
-                        </ul>
-                    </div>
-            `;
-
-            const extTemplate = document.createElement('div');
-            extTemplate.innerHTML = extHtml;
-            extTemplate.setAttribute('id', 'extensionsList')
-
-            const extList = document.getElementById('extensions');
-            extList.appendChild(extTemplate);
-            extList.classList.remove('hidden');
-
-            /* const imgDetails = document.getElementById('imageDetails');
-            imgDetails.classList.remove('hidden'); */
-            
-        });
+        }
+        
     }
 
     function filterExtensions() {
         const searchExtension = document.getElementById('searchExtension');
         const extensions = document.querySelectorAll('li.extension:not(.extHeader)');
+        const extHeader = document.querySelector('li.extension.extHeader');
         
         const clearExtensions = document.getElementById('clearExtensions');
         if(searchExtension.value.length) {
@@ -746,8 +835,10 @@ breadcrumbs: false
         const noExtensions = document.querySelector('.noExtensions');
         if(extensions.length === hiddenExtensions.length) {
             noExtensions.classList.remove('hidden');
+            extHeader.classList.add('hidden');
         } else {
             noExtensions.classList.add('hidden');
+            extHeader.classList.remove('hidden');
         }
     }
 
@@ -775,5 +866,15 @@ breadcrumbs: false
 
     function toggleExtensionsPopup() {
         extensionsPopup.classList.toggle('hidden');
+    }
+
+    function isDefaultExtValueEnabled(extName) {
+        extensionsList.find( (ext)=> {
+            (
+                (ext.name === extName) &&
+                ext.versions[0].hasOwnProperty('enabled') &&
+                ext.versions[0].enabled
+            )
+        })
     }
 </script>
