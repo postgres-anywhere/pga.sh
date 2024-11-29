@@ -634,6 +634,10 @@ img.border {
     text-transform: uppercase;
 }
 
+.uppercase {
+    text-transform: uppercase;
+}
+
 .warning {
     border: 1px solid var(--lOrange);
     border-radius: 5px;
@@ -2072,8 +2076,13 @@ button#clearExtensions {
 }
 
 #checkout ul {
-    margin: 0 0 10px;
+    /* margin: 0 0 10px; */
+    margin: 0;
     padding-left: 0;
+}
+
+#checkout ul.layerDetails {
+    margin-bottom: 15px;
 }
 
 #checkout ul ul {
