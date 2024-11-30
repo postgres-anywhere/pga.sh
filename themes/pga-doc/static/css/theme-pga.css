@@ -1925,6 +1925,7 @@ input.enableExtension {
     border: 1px solid var(--baseLightColor);
     border-radius: 3px;
     cursor: pointer;
+    display: inline-block;
 }
 
 input.enableExtension:checked:before {
