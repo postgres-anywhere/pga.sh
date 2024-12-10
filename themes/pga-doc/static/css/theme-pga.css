@@ -2027,6 +2027,45 @@ button#clearExtensions {
     word-wrap: break-word;
 }
 
+/* center the toggles in imageDetails */
+/*
+#imageDetails > div:nth-of-type(2) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#imageDetails > div:nth-of-type(2) > div.fLeft {
+    display: inline-block;
+}
+*/
+
+#imageDetails div > div.fLeft {
+    margin-right: 10px !important;
+}
+
+#imageDetails div.fLeft label.fLeft {
+    padding: 5px 5px 5px 20px !important;
+}
+
+#imageDetails div:first-child.fLeft label.fLeft {
+    padding: 5px 5px 5px 10px !important;
+}
+
+#imageDetails .form-group.switch {
+    height: 25px;
+    line-height: 0;
+    padding: 0;
+    margin: 0;
+    margin-top: 3px;
+}
+
+#imageDetails .switch input + span {
+    line-height: 15px;
+    padding: 2px;
+    margin: 3px;
+}
+
 #imageUrl {
     font-size: 120%;
     line-height: normal;
