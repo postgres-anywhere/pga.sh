@@ -786,6 +786,7 @@ body:not(.active) #header nav a:hover {
 
 #header .follow a {
     margin-left: 15px;
+    color: var(--textColor);
 }
 
 #header .follow path {
