@@ -108,7 +108,7 @@ breadcrumbs: false
                                     <option value="m" selected>M</option>
                                 </select>
                             </div>
-                            <div class="form-group fLeft">
+                            <div class="form-group">
                                 <label>
                                     Postgres Version
                                 </label>
@@ -122,46 +122,51 @@ breadcrumbs: false
                                     <option disabled>Choose version...</option>
                                 </select>
                             </div>
-                            <div class="patroniVersionsContainer form-group fRight padXS hidden">
-                                <label>
-                                    Patroni Version
-                                </label>
-                                <select
-                                    name="patroni-version"
-                                    id="patroniVersion"
-                                    onchange=" getImageUrl()"
-                                >
-                                </select>
-                            </div>
-                            <div class="fRight">
-                                <label>
-                                    Patroni
-                                </label>
-                                <div class="form-group switch">
-                                    <label class="monospaced small">
-                                        <input
-                                            type="radio"
-                                            name="patroni"
-                                            id="patroni-enable"
-                                            value="enable"
-                                            onchange="togglePatroniVersions(); getImageUrl()"
-                                        />
-                                        <span>Enable</span>
+                            <div class="form-group row">
+                                <div class="col">
+                                    <label>
+                                        Patroni
                                     </label>
-                                    <label class="monospaced small">
-                                        <input
-                                            type="radio"
-                                            name="patroni"
-                                            id="patroni-disable"
-                                            value="disable"
-                                            checked
-                                            onchange="togglePatroniVersions(); getImageUrl()"
-                                        />
-                                        <span>Disable</span>
-                                    </label>
+                                    <div class="form-group switch">
+                                        <label class="monospaced small">
+                                            <input
+                                                type="radio"
+                                                name="patroni"
+                                                id="patroni-disable"
+                                                value="disable"
+                                                checked
+                                                onchange="togglePatroniVersions(); getImageUrl()"
+                                            />
+                                            <span>Disable</span>
+                                        </label>
+                                        <label class="monospaced small">
+                                            <input
+                                                type="radio"
+                                                name="patroni"
+                                                id="patroni-enable"
+                                                value="enable"
+                                                onchange="togglePatroniVersions(); getImageUrl()"
+                                            />
+                                            <span>Enable</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group padXS">
+                                        <label>
+                                            Patroni Version
+                                        </label>
+                                        <select
+                                            name="patroni-version"
+                                            id="patroniVersion"
+                                            onchange="getImageUrl()"
+                                            disabled
+                                        >
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-
+                            
                             <div class="clearfix"></div>
 
                             <div id="extensions" class="col-sm-12 hidden">
@@ -169,9 +174,6 @@ breadcrumbs: false
                                     <label class="noMargin">
                                         Extensions
                                     </label>
-                                    <span class="small">
-                                        Select the extensions you would like to install
-                                    </span>
                                 </div>
                                 <div id="extensionsList">
                                     <div class="fields">
@@ -183,6 +185,9 @@ breadcrumbs: false
                                         </div>
                                         <div class="clearfix"></div>
                                     </div>
+                                </div>
+                                <div class="box textCenter">
+                                    <p>Don't find the extension you are looking for? <a href="https://github.com/postgres-anywhere" target="_blank">Please let us know.</a></p>
                                 </div>
                             </div>
                         </form>
@@ -357,7 +362,7 @@ breadcrumbs: false
             
             const imageSummary = document.querySelector('#imageSummary');
             var imageSummaryHtml = `
-                <ul class="small">
+                <ul>
                     <li>
                         <strong>Components</strong>
 
@@ -521,8 +526,7 @@ breadcrumbs: false
     }
 
     function togglePatroniVersions() {
-        patroniVersionsContainer.classList.toggle('hidden');
-        patroniVersions.selectedIndex = 1;
+        patroniVersions.toggleAttribute('disabled');
     }
 
     function getAddons() {
@@ -685,7 +689,7 @@ breadcrumbs: false
                         <span class="extInfo">
                             <span class="version form-group">
                                 <select
-                                    class="extVersion"
+                                    class="extVersion small"
                                     onchange="setExtensionVersion('${ext.name}')"
                                 >`;
                 
@@ -714,7 +718,7 @@ breadcrumbs: false
 
                             ext.extensionVersions.forEach( (version) => {
                                 extHtml += `
-                                    <ul class="small">
+                                    <ul>
                                         <li>
                                             <strong>– v${version.version}:</strong> ${version.longDescription}<br/>
                                             <ul>

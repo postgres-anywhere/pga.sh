@@ -1874,8 +1874,8 @@ li.extension .extInfo {
 }
 
 li.extension .description p, li.extension select, li.extension .extInfo label {
-    font-size: 80%;
-    line-height: 1.2;
+    /* font-size: 80%;
+    line-height: 1.2; */
     margin: 0;
 }
 
@@ -2139,7 +2139,7 @@ table.subTotal {
 
 #extensions {
     border: 1px solid var(--baseColor);
-    padding: 10px 20px;
+    padding: 10px 20px 20px;
     border-radius: 3px;
     display: inline-block;
 }
@@ -2150,6 +2150,16 @@ table.subTotal {
 
 #extensionsPopup li:last-child {
     margin-bottom: 10px;
+}
+
+.form-group.row {
+    display: inline-block;
+    width: 100%;
+}
+
+.form-group.row > .col {
+    display: inline-block;
+    width: auto;
 }
 
 .form-group.switch {
