@@ -823,8 +823,9 @@ breadcrumbs: false
             }
         })
 
-        const hiddenExtensions = document.querySelectorAll('li.extension.hidden');
+        const hiddenExtensions = document.querySelectorAll('li.extension:not(.extHeader).hidden');
         const noExtensions = document.querySelector('.noExtensions');
+
         if(extensions.length === hiddenExtensions.length) {
             noExtensions.classList.remove('hidden');
             extHeader.classList.add('hidden');
