@@ -1909,6 +1909,7 @@ li.extension hr {
 
 .no-sidebar #body-inner h1 {
     text-align: center;
+    margin-bottom: 15px;
 }
 
 select#version {
@@ -2404,10 +2405,6 @@ li.extension .extDetails li:before, #imageSummary li:before {
         overflow: initial;
         max-height: initial;
         margin-top: initial;
-    }
-
-    #body-inner {
-        margin-top: 2rem;
     }
 
     .toc:after {
