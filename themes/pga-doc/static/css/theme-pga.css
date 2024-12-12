@@ -552,6 +552,10 @@ input[type="submit"] {
     display: inline-block;
 }
 
+.inlineItems + .inlineItems {
+    margin-left: 20px;
+}
+
 .textLeft {
     text-align: left;
 }
@@ -2025,6 +2029,11 @@ button#clearExtensions {
 #imageDetails .copyCode {
     overflow: auto !important;
     word-wrap: break-word;
+    margin-bottom: 10px !important;
+}
+
+.inlineItems > .form-group.switch {
+    margin: 0 5px;
 }
 
 #imageUrl {
