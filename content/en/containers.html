@@ -656,7 +656,7 @@ breadcrumbs: false
         
         let extHtml = `
                 <div class="noExtensions ${extData.length && 'hidden'}">
-                    <p class="textCenter">No extensions have been found.</p>
+                    <p class="textCenter">No extensions have been found for Postgres <span class="pgVersion"></span>.</p>
                 </div>
                 <li class="extension extHeader">
                     <span class="name">
@@ -829,8 +829,10 @@ breadcrumbs: false
 
         const hiddenExtensions = document.querySelectorAll('li.extension:not(.extHeader).hidden');
         const noExtensions = document.querySelector('.noExtensions');
+        const noExtensionsVersion = document.querySelector('.noExtensions .pgVersion');
 
         if(extensions.length === hiddenExtensions.length) {
+            noExtensionsVersion.innerHTML = versionSelector.value;
             noExtensions.classList.remove('hidden');
             extHeader.classList.add('hidden');
         } else {
