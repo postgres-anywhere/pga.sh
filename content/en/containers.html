@@ -108,72 +108,102 @@ breadcrumbs: false
                                     <option value="m" selected>M</option>
                                 </select>
                             </div>
-                            <div class="form-group fLeft">
-                                <label>
-                                    Postgres Version
-                                </label>
-                                <select
-                                    name="version"
-                                    id="version"
-                                    class="getExtensions autoWidth"
-                                    onchange="getExtensions(); getImageUrl();"
-                                    disabled
-                                >
-                                    <option disabled>Choose version...</option>
-                                </select>
-                            </div>
-                            <div class="patroniVersionsContainer form-group fRight padXS hidden">
-                                <label>
-                                    Patroni Version
-                                </label>
-                                <select
-                                    name="patroni-version"
-                                    id="patroniVersion"
-                                    onchange=" getImageUrl()"
-                                >
-                                </select>
-                            </div>
-                            <div class="fRight">
-                                <label>
-                                    Patroni
-                                </label>
-                                <div class="form-group switch">
-                                    <label class="monospaced small">
-                                        <input
-                                            type="radio"
-                                            name="patroni"
-                                            id="patroni-enable"
-                                            value="enable"
-                                            onchange="togglePatroniVersions(); getImageUrl()"
-                                        />
-                                        <span>Enable</span>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label>
+                                        Postgres Version
+                                        <span class="helpTooltip" title="Select the version of Postgres that will contain the image. You may select a label like latest for the latest major and minor version, or a label like 15.latest that will select the latest minor version for Postgres 15.">
+                                            🛈
+                                        </span>
                                     </label>
-                                    <label class="monospaced small">
-                                        <input
-                                            type="radio"
-                                            name="patroni"
-                                            id="patroni-disable"
-                                            value="disable"
-                                            checked
-                                            onchange="togglePatroniVersions(); getImageUrl()"
-                                        />
-                                        <span>Disable</span>
-                                    </label>
+                                    <select
+                                        name="version"
+                                        id="version"
+                                        class="getExtensions autoWidth noMargin"
+                                        onchange="getExtensions(); getImageUrl();"
+                                        disabled
+                                    >
+                                        <option disabled>Choose version...</option>
+                                    </select>
                                 </div>
-                            </div>
-
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <label>
+                                            Patroni
+                                            <span class="helpTooltip" title='Add a Patroni layer to the image, to implement high availability. You may select "latest" or any other Patroni version available.'>
+                                                🛈
+                                            </span>
+                                        </label>
+                                        <div class="form-group switch noMargin">
+                                            <label class="monospaced small">
+                                                <input
+                                                    type="radio"
+                                                    name="patroni"
+                                                    id="patroni-disable"
+                                                    value="disable"
+                                                    checked
+                                                    onchange="togglePatroniVersions(); getImageUrl()"
+                                                />
+                                                <span>Disable</span>
+                                            </label>
+                                            <label class="monospaced small">
+                                                <input
+                                                    type="radio"
+                                                    name="patroni"
+                                                    id="patroni-enable"
+                                                    value="enable"
+                                                    onchange="togglePatroniVersions(); getImageUrl()"
+                                                />
+                                                <span>Enable</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group padXS">
+                                            <label>
+                                                Patroni Version
+                                            </label>
+                                            <select
+                                                name="patroni-version"
+                                                id="patroniVersion"
+                                                class="noMargin"
+                                                onchange="getImageUrl()"
+                                                disabled
+                                            >
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            
                             <div class="clearfix"></div>
 
-                            <div id="extensions" class="col-sm-12 hidden">
+                            <fieldset id="extensions" class="col-sm-12 hidden">
                                 <div class="fLeft">
                                     <label class="noMargin">
                                         Extensions
+                                        <span class="helpTooltip" title="Add as many extensions as you want for your Postgres image. Note that all extensions are specifically compiled against the Postgres major and minor version selected. Some extensions may have more than one available version.">
+                                            🛈
+                                        </span>
                                     </label>
-                                    <span class="small">
-                                        Select the extensions you would like to install
-                                    </span>
                                 </div>
-                            </div>
+                                <div id="extensionsList">
+                                    <div class="fields">
+                                        <div class="toolbar">
+                                            <div class="searchBar extensions form-group relative">
+                                                <input type="text" onkeyup="filterExtensions()" id="searchExtension" name="searchExtension" class="search fRight autoWidth" placeholder="Filter extensions..." autocomplete="off">
+                                                <button type="button" onclick="clearExtFilter()" id="clearExtensions" class="btn hidden">CLEAR</a>
+                                            </div>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </div>
+                                <div class="box textCenter">
+                                    <p>Don't find the extension you are looking for? <a href="https://github.com/postgres-anywhere" target="_blank">Please let us know.</a></p>
+                                </div>
+                            </fieldset>
                         </form>
 
                         <div id="checkout" class="col-sm-12 col-md-4">
@@ -248,7 +278,7 @@ breadcrumbs: false
         const extVersion = document.querySelector(`li.extension[data-name=${extName}] select.extVersion`);
         const extCheckbox = document.querySelector(`li.extension[data-name=${extName}] input.enableExtension`);
 
-        extCheckbox.value = `{"name":"${extName}","version":"${extVersion.value}"}`;
+        extCheckbox.value = `{"name":"${extName}"${ (extVersion.value !== 'Default') ? ',"version":"' + extVersion.value + '"' : ''}}`;
         getImageUrl();
     }
 
@@ -346,7 +376,7 @@ breadcrumbs: false
             
             const imageSummary = document.querySelector('#imageSummary');
             var imageSummaryHtml = `
-                <ul class="small">
+                <ul>
                     <li>
                         <strong>Components</strong>
 
@@ -510,8 +540,7 @@ breadcrumbs: false
     }
 
     function togglePatroniVersions() {
-        patroniVersionsContainer.classList.toggle('hidden');
-        patroniVersions.selectedIndex = 1;
+        patroniVersions.toggleAttribute('disabled');
     }
 
     function getAddons() {
@@ -519,8 +548,6 @@ breadcrumbs: false
         fetch('https://42.pga.sh/api/pga/v1/addons?flavor=postgres')
         .then(response => response.json())
         .then(data => {
-            console.log(data)
-
             const patroni = data.addons.find( (addon) => (addon.name === 'patroni'));
 
             if( (typeof patroni !== 'undefined') && patroni.versions.length) {
@@ -642,33 +669,22 @@ breadcrumbs: false
         const defaultExtEnabled = getDefaultExtEnabled();
         
         let extHtml = `
-            <div class="fields">
-                <div class="toolbar">
-                    <div class="searchBar extensions form-group relative">
-                        <input type="text" onkeyup="filterExtensions()" id="searchExtension" name="searchExtension" class="search fRight autoWidth" placeholder="Filter extensions..." autocomplete="off">
-                        <button type="button" onclick="clearExtFilter()" id="clearExtensions" class="btn hidden">CLEAR</a>
-                    </div>
+                <div class="noExtensions ${extData.length && 'hidden'}">
+                    <p class="textCenter">No extensions that match your criteria have been found for Postgres <span class="pgVersion"></span>.</p>
                 </div>
-                <div class="clearfix"></div>
-
-                <ul class="extensionsList">
-                    <div class="noExtensions ${extData.length && 'hidden'}">
-                        <p class="textCenter">No extensions have been found.</p>
-                    </div>
-                    <li class="extension extHeader">
-                        <span class="name">
-                            Name
+                <li class="extension extHeader">
+                    <span class="name">
+                        Name
+                    </span>
+                    <span class="extInfo">
+                        <span class="description">
+                            Description
                         </span>
-                        <span class="extInfo">
-                            <span class="version">
-                                Version
-                            </span>
-                            <span class="description">
-                                Description
-                            </span>
+                        <span class="version">
+                            Version
                         </span>
-                    </li>
-                    `;
+                    </span>
+                </li>`;
 
         extData.forEach( (ext, index) => {
             if(ext.hasOwnProperty('extensionVersions') && ext.extensionVersions.length) {
@@ -685,23 +701,6 @@ breadcrumbs: false
                             <span>${ext.name}</span>
                         </label>
                         <span class="extInfo">
-                            <span class="version form-group">
-                                <select
-                                    class="extVersion"
-                                    onchange="setExtensionVersion('${ext.name}')"
-                                >`;
-                
-                ext.extensionVersions.forEach( (version) => {
-                    extHtml += `
-                        <option value="${version.version}">
-                            ${version.version}
-                        </option>
-                    `;
-                })
-
-                extHtml += `
-                                </select>
-                            </span>
                             <span
                                 class="description hasTooltip"
                                 onclick="toggleExtension('${ext.name}', true)"
@@ -710,13 +709,32 @@ breadcrumbs: false
                                     ${ext.extensionVersions[0].longDescription}
                                 </p>
                             </span>
+                            <span class="version form-group">
+                                <select
+                                    class="extVersion small"
+                                    onchange="setExtensionVersion('${ext.name}')"
+                                >
+                                    <option>Default</option>`
+                                ;
+                
+                ext.extensionVersions.forEach( (version) => {
+                    extHtml += `
+                        <option value="${version.version}">
+                            ${version.version}
+                        </option>
+                    `;
+                });
+
+                extHtml += `
+                                </select>
+                            </span>
                             <button class="btn plain" onclick="viewExtensionDetails('${ext.name}')">▾</button>
                         </span>
                         <div class="extDetails">`;
 
                             ext.extensionVersions.forEach( (version) => {
                                 extHtml += `
-                                    <ul class="small">
+                                    <ul>
                                         <li>
                                             <strong>– v${version.version}:</strong> ${version.longDescription}<br/>
                                             <ul>
@@ -765,33 +783,27 @@ breadcrumbs: false
                 `;
             }
         })
-        
-        extHtml += `
-                    </ul>
-                </div>
-        `;
 
         // Remove previous extensions container if exists 
-        const prevExt = document.getElementById('extensionsList');
+        const prevExt = document.querySelector('ul.extensionsList');
         if(prevExt !== null) {
             prevExt.remove();
         }
 
-        const extTemplate = document.createElement('div');
+        const extTemplate = document.createElement('ul');
         extTemplate.innerHTML = extHtml;
-        extTemplate.setAttribute('id', 'extensionsList')
+        extTemplate.classList.add('extensionsList');
 
-        const extList = document.getElementById('extensions');
+        const extList = document.querySelector('#extensions .fields');
         extList.appendChild(extTemplate);
-        extList.classList.remove('hidden');
+        
+        const extensions = document.querySelector('#extensions');
+        extensions.classList.remove('hidden');
+
+        filterExtensions();
     }
 
     function getExtensions(architecture = 'amd64', flavor = 'postgres', majorVersion = '', minorVersion = '') {
-
-        const searchExtension = document.getElementById('searchExtension');
-        if(searchExtension) {
-            searchExtension.value = '';
-        }
 
         if(!majorVersion.length && !minorVersion.length) {
             majorVersion = versionSelector.value.split('.')[0];
@@ -831,9 +843,12 @@ breadcrumbs: false
             }
         })
 
-        const hiddenExtensions = document.querySelectorAll('li.extension.hidden');
+        const hiddenExtensions = document.querySelectorAll('li.extension:not(.extHeader).hidden');
         const noExtensions = document.querySelector('.noExtensions');
+        const noExtensionsVersion = document.querySelector('.noExtensions .pgVersion');
+
         if(extensions.length === hiddenExtensions.length) {
+            noExtensionsVersion.innerHTML = versionSelector.value;
             noExtensions.classList.remove('hidden');
             extHeader.classList.add('hidden');
         } else {

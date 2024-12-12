@@ -43,7 +43,7 @@
 
         <section id="body" class="{{ if eq .Params.Sidebar false }} no-sidebar {{ end }}">
           <div id="overlay"></div>
-          <div class="padding highlightable">
+          <div class="{{ if .Param "Sidebar" }} padding {{ end }} highlightable">
                 {{if not .IsHome}}
                 <div>
                   <div id="top-bar">
@@ -59,8 +59,6 @@
                     </div>
                     {{ end }}
                   {{ end }}
-                  {{$toc := (and (.Params.showToc) (not .Params.chapter) )}}
-                  
                   <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
                       <span id="sidebar-toggle-span">
                           <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
@@ -76,6 +74,7 @@
                         {{ end }}
                       </span>
                   </div>
+                  {{$toc := (and (.Params.showToc) (not .Params.chapter) )}}
                   {{ if $toc }}
                     {{ partial "toc.html" . }}
                   {{ end }}

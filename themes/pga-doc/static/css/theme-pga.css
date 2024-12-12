@@ -245,7 +245,7 @@ a:hover {
 }
 
 .noMargin {
-    margin: 0;
+    margin: 0 !important;
 }
 
 .noPadding {
@@ -786,6 +786,7 @@ body:not(.active) #header nav a:hover {
 
 #header .follow a {
     margin-left: 15px;
+    color: var(--textColor);
 }
 
 #header .follow path {
@@ -1805,14 +1806,7 @@ li.extension::before {
 
 ul.extensionsList {
     padding-left: 0;
-    /* display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
-    /*grid-template-columns: 1fr 1fr 1fr 1fr;*/
-    grid-gap: 20px;
-    overflow: auto;
-    max-height: 70vh;
-    padding-right: 10px;
-    padding-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 li.extension {
@@ -1836,10 +1830,6 @@ li.extension.extHeader {
 
 li.extension.extHeader .name {
     padding-left: 28px;
-}
-
-li.extension.extHeader .extInfo span.version {
-    float: left;
 }
 
 li.extension label.name, li.extension .name {
@@ -1873,20 +1863,20 @@ li.extension .extInfo {
 }
 
 li.extension .description p, li.extension select, li.extension .extInfo label {
-    font-size: 80%;
-    line-height: 1.2;
+    /* font-size: 80%;
+    line-height: 1.2; */
     margin: 0;
 }
 
 li.extension .description {
     padding-left: 10px;
-    width: calc(100% - 80px);
+    width: calc(100% - 95px);
     overflow: hidden;
     cursor: pointer;
 }
 
 li.extension .extInfo span.version, li.extension .extInfo span.version select {
-    width: 60px;
+    width: 75px;
 }
 
 li.extension .description p {
@@ -1908,6 +1898,7 @@ li.extension hr {
 
 .no-sidebar #body-inner h1 {
     text-align: center;
+    margin-bottom: 15px;
 }
 
 select#version {
@@ -1973,7 +1964,7 @@ li.extension.active .btn:focus {
 }
 
 button#clearExtensions {
-    top: 5px;
+    top: 15px;
     border-radius: 5px !important;
     color: var(--bgColor) !important;
     height: 35px;
@@ -2048,6 +2039,8 @@ button#clearExtensions {
     margin: 0 auto;
     display: inline-block;
     padding-right: 45px;
+    position: relative;
+    top: 10px;
 }
 
 /* #imageForm {
@@ -2137,7 +2130,6 @@ table.subTotal {
 
 #extensions {
     border: 1px solid var(--baseColor);
-    padding: 10px 20px;
     border-radius: 3px;
     display: inline-block;
 }
@@ -2148,6 +2140,25 @@ table.subTotal {
 
 #extensionsPopup li:last-child {
     margin-bottom: 10px;
+}
+
+fieldset {
+    border: 1px solid var(--baseColor);
+    border-radius: 3px;
+    display: inline-block;
+    width: 100%;
+    padding-top: 5px;
+    margin-bottom: 15px;
+}
+
+.form-group.row {
+    display: inline-block;
+    width: 100%;
+}
+
+.form-group.row > .col {
+    display: inline-block;
+    width: auto;
 }
 
 .form-group.switch {
@@ -2403,10 +2414,6 @@ li.extension .extDetails li:before, #imageSummary li:before {
         overflow: initial;
         max-height: initial;
         margin-top: initial;
-    }
-
-    #body-inner {
-        margin-top: 2rem;
     }
 
     .toc:after {
