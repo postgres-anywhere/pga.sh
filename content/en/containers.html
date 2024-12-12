@@ -173,6 +173,17 @@ breadcrumbs: false
                                         Select the extensions you would like to install
                                     </span>
                                 </div>
+                                <div id="extensionsList">
+                                    <div class="fields">
+                                        <div class="toolbar">
+                                            <div class="searchBar extensions form-group relative">
+                                                <input type="text" onkeyup="filterExtensions()" id="searchExtension" name="searchExtension" class="search fRight autoWidth" placeholder="Filter extensions..." autocomplete="off">
+                                                <button type="button" onclick="clearExtFilter()" id="clearExtensions" class="btn hidden">CLEAR</a>
+                                            </div>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </div>
                             </div>
                         </form>
 
@@ -519,8 +530,6 @@ breadcrumbs: false
         fetch('https://42.pga.sh/api/pga/v1/addons?flavor=postgres')
         .then(response => response.json())
         .then(data => {
-            console.log(data)
-
             const patroni = data.addons.find( (addon) => (addon.name === 'patroni'));
 
             if( (typeof patroni !== 'undefined') && patroni.versions.length) {
@@ -642,33 +651,22 @@ breadcrumbs: false
         const defaultExtEnabled = getDefaultExtEnabled();
         
         let extHtml = `
-            <div class="fields">
-                <div class="toolbar">
-                    <div class="searchBar extensions form-group relative">
-                        <input type="text" onkeyup="filterExtensions()" id="searchExtension" name="searchExtension" class="search fRight autoWidth" placeholder="Filter extensions..." autocomplete="off">
-                        <button type="button" onclick="clearExtFilter()" id="clearExtensions" class="btn hidden">CLEAR</a>
-                    </div>
+                <div class="noExtensions ${extData.length && 'hidden'}">
+                    <p class="textCenter">No extensions have been found.</p>
                 </div>
-                <div class="clearfix"></div>
-
-                <ul class="extensionsList">
-                    <div class="noExtensions ${extData.length && 'hidden'}">
-                        <p class="textCenter">No extensions have been found.</p>
-                    </div>
-                    <li class="extension extHeader">
-                        <span class="name">
-                            Name
+                <li class="extension extHeader">
+                    <span class="name">
+                        Name
+                    </span>
+                    <span class="extInfo">
+                        <span class="version">
+                            Version
                         </span>
-                        <span class="extInfo">
-                            <span class="version">
-                                Version
-                            </span>
-                            <span class="description">
-                                Description
-                            </span>
+                        <span class="description">
+                            Description
                         </span>
-                    </li>
-                    `;
+                    </span>
+                </li>`;
 
         extData.forEach( (ext, index) => {
             if(ext.hasOwnProperty('extensionVersions') && ext.extensionVersions.length) {
@@ -765,33 +763,27 @@ breadcrumbs: false
                 `;
             }
         })
-        
-        extHtml += `
-                    </ul>
-                </div>
-        `;
 
         // Remove previous extensions container if exists 
-        const prevExt = document.getElementById('extensionsList');
+        const prevExt = document.querySelector('ul.extensionsList');
         if(prevExt !== null) {
             prevExt.remove();
         }
 
-        const extTemplate = document.createElement('div');
+        const extTemplate = document.createElement('ul');
         extTemplate.innerHTML = extHtml;
-        extTemplate.setAttribute('id', 'extensionsList')
+        extTemplate.classList.add('extensionsList');
 
-        const extList = document.getElementById('extensions');
+        const extList = document.querySelector('#extensions .fields');
         extList.appendChild(extTemplate);
-        extList.classList.remove('hidden');
+        
+        const extensions = document.querySelector('#extensions');
+        extensions.classList.remove('hidden');
+
+        filterExtensions();
     }
 
     function getExtensions(architecture = 'amd64', flavor = 'postgres', majorVersion = '', minorVersion = '') {
-
-        const searchExtension = document.getElementById('searchExtension');
-        if(searchExtension) {
-            searchExtension.value = '';
-        }
 
         if(!majorVersion.length && !minorVersion.length) {
             majorVersion = versionSelector.value.split('.')[0];
