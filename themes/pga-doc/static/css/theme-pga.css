@@ -1806,14 +1806,6 @@ li.extension::before {
 
 ul.extensionsList {
     padding-left: 0;
-    /* display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
-    /*grid-template-columns: 1fr 1fr 1fr 1fr;*/
-    grid-gap: 20px;
-    overflow: auto;
-    max-height: 70vh;
-    padding-right: 10px;
-    padding-bottom: 20px;
 }
 
 li.extension {
