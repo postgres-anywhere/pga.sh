@@ -112,6 +112,9 @@ breadcrumbs: false
                                 <div class="form-group">
                                     <label>
                                         Postgres Version
+                                        <span class="helpTooltip" title="Select the version of Postgres that will contain the image. You may select a label like latest for the latest major and minor version, or a label like 15.latest that will select the latest minor version for Postgres 15.">
+                                            🛈
+                                        </span>
                                     </label>
                                     <select
                                         name="version"
@@ -129,6 +132,9 @@ breadcrumbs: false
                                     <div class="col">
                                         <label>
                                             Patroni
+                                            <span class="helpTooltip" title='Add a Patroni layer to the image, to implement high availability. You may select "latest" or any other Patroni version available.'>
+                                                🛈
+                                            </span>
                                         </label>
                                         <div class="form-group switch noMargin">
                                             <label class="monospaced small">
@@ -178,6 +184,9 @@ breadcrumbs: false
                                 <div class="fLeft">
                                     <label class="noMargin">
                                         Extensions
+                                        <span class="helpTooltip" title="Add as many extensions as you want for your Postgres image. Note that all extensions are specifically compiled against the Postgres major and minor version selected. Some extensions may have more than one available version.">
+                                            🛈
+                                        </span>
                                     </label>
                                 </div>
                                 <div id="extensionsList">
