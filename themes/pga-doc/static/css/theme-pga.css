@@ -552,6 +552,10 @@ input[type="submit"] {
     display: inline-block;
 }
 
+.inlineItems + .inlineItems {
+    margin-left: 20px;
+}
+
 .textLeft {
     text-align: left;
 }
@@ -2025,45 +2029,11 @@ button#clearExtensions {
 #imageDetails .copyCode {
     overflow: auto !important;
     word-wrap: break-word;
+    margin-bottom: 10px !important;
 }
 
-/* center the toggles in imageDetails */
-/*
-#imageDetails > div:nth-of-type(2) {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#imageDetails > div:nth-of-type(2) > div.fLeft {
-    display: inline-block;
-}
-*/
-
-#imageDetails div > div.fLeft {
-    margin-right: 10px !important;
-}
-
-#imageDetails div.fLeft label.fLeft {
-    padding: 5px 5px 5px 20px !important;
-}
-
-#imageDetails div:first-child.fLeft label.fLeft {
-    padding: 5px 5px 5px 10px !important;
-}
-
-#imageDetails .form-group.switch {
-    height: 25px;
-    line-height: 0;
-    padding: 0;
-    margin: 0;
-    margin-top: 3px;
-}
-
-#imageDetails .switch input + span {
-    line-height: 15px;
-    padding: 2px;
-    margin: 3px;
+.inlineItems > .form-group.switch {
+    margin: 0 5px;
 }
 
 #imageUrl {

@@ -19,63 +19,64 @@ breadcrumbs: false
                             >docker pull 42.pga.sh/postgres</code>
                         </pre>
                     </div>
-                    <div class="col-sm-12">
-                        <div class="fLeft">
-                            <label class="fLeft">
-                                Command
-                            </label>
-                            <div class="form-group switch row">
-                                <label class="monospaced small">
-                                    <input
-                                        type="radio"
-                                        name="command"
-                                        id="command-pull"
-                                        value="docker pull $imageURL"
-                                        checked
-                                        onchange="updateCommand()"
-                                    />
-                                    <span>pull</span>
+                    <div class="col-sm-12 textCenter inlineItems">
+                            <div class="col inlineItems">
+                                <label>
+                                    Command
                                 </label>
-                                <label class="monospaced small">
-                                    <input
-                                        type="radio"
-                                        name="command"
-                                        id="command-run"
-                                        value="docker run --rm --name pg -d -e POSTGRES_PASSWORD=pwd $imageURL
-    
-        docker exec -it pg psql postgres postgres"
-                                        onchange="updateCommand()"
-                                    />
-                                    <span>run</span>
-                                </label>
+                                <div class="form-group switch row">
+                                    <label class="monospaced small">
+                                        <input
+                                            type="radio"
+                                            name="command"
+                                            id="command-pull"
+                                            value="docker pull $imageURL"
+                                            checked
+                                            onchange="updateCommand()"
+                                        />
+                                        <span>pull</span>
+                                    </label>
+                                    <label class="monospaced small">
+                                        <input
+                                            type="radio"
+                                            name="command"
+                                            id="command-run"
+                                            value="docker run --rm --name pg -d -e POSTGRES_PASSWORD=pwd $imageURL
+        
+            docker exec -it pg psql postgres postgres"
+                                            onchange="updateCommand()"
+                                        />
+                                        <span>run</span>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="fLeft">
-                            <label class="fLeft">
-                                Image
-                            </label>
-                            <div class="form-group switch row">
-                                <label class="monospaced small">
-                                    <input
-                                        type="radio"
-                                        name="image"
-                                        id="image-canonical"
-                                        value="canonical"
-                                        checked
-                                        onchange="updateCommand()"
-                                    />
-                                    <span>canonical</span>
+                            <div class="col inlineItems">
+                                <label>
+                                    Image
                                 </label>
-                                <label class="monospaced small">
-                                    <input
-                                        type="radio"
-                                        name="image"
-                                        id="image-digest"
-                                        value="digest"
-                                        onchange="updateCommand()"
-                                    />
-                                    <span>digest</span>
-                                </label>
+                                <div class="form-group switch row">
+                                    <label class="monospaced small">
+                                        <input
+                                            type="radio"
+                                            name="image"
+                                            id="image-canonical"
+                                            value="canonical"
+                                            checked
+                                            onchange="updateCommand()"
+                                        />
+                                        <span>canonical</span>
+                                    </label>
+                                    <label class="monospaced small">
+                                        <input
+                                            type="radio"
+                                            name="image"
+                                            id="image-digest"
+                                            value="digest"
+                                            onchange="updateCommand()"
+                                        />
+                                        <span>digest</span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -498,43 +499,6 @@ breadcrumbs: false
             
             
             imageSummary.innerHTML = imageSummaryHtml;
-
-            /* const imageSizeContainer = document.querySelector('.imageSize');
-            imageSizeContainer.innerHTML = `(${(imageSize / 1000000).toFixed(2)}MB)`; */
-
-            /* let imageSize = {
-                total: 0,
-                components: {}
-            };
-
-            imageSize.components['base'] = data.image.size;
-            imageSize.components['postgres'] = data.image.flavors[0].size;
-
-            if(data.image.flavors[0].extensions.length) {
-                imageSize.components['extensions'] = 0;
-
-                data.image.flavors[0].extensions.forEach( (ext) => {
-                    imageSize.components['extensions'] += ext.size;
-                })
-            }
-
-            Object.keys(imageSize.components).forEach( (comp) => {
-                imageSize.total += imageSize.components[comp];
-            })
-
-            const imageSizeTotal = document.querySelector('#imageSize strong');
-
-            imageSizeTotal.innerHTML = `Image Size: ${(imageSize.total / 1000000).toFixed(2)}MB`;
-
-            const imageSizeContainer = document.querySelector('.sizeBar');
-            imageSizeContainer.innerHTML = '';
-            Object.keys(imageSize.components).forEach( (comp) => {
-                imageSizeContainer.innerHTML += `
-                    <span class="size ${comp}" style="width: ${imageSize.components[comp] * 100 / imageSize.total}%" title="${comp} (${(imageSize.components[comp] / 1000000).toFixed(2)}MB)">
-                        <strong>${comp}</strong><br/>
-                        ${(imageSize.components[comp] / 1000000).toFixed(2)}MB
-                    </span>`;
-            }) */
         });
     }
 
