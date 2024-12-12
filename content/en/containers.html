@@ -269,7 +269,7 @@ breadcrumbs: false
         const extVersion = document.querySelector(`li.extension[data-name=${extName}] select.extVersion`);
         const extCheckbox = document.querySelector(`li.extension[data-name=${extName}] input.enableExtension`);
 
-        extCheckbox.value = `{"name":"${extName}","version":"${extVersion.value}"}`;
+        extCheckbox.value = `{"name":"${extName}"${ (extVersion.value !== 'Default') ? ',"version":"' + extVersion.value + '"' : ''}}`;
         getImageUrl();
     }
 
@@ -661,18 +661,18 @@ breadcrumbs: false
         
         let extHtml = `
                 <div class="noExtensions ${extData.length && 'hidden'}">
-                    <p class="textCenter">No extensions have been found for Postgres <span class="pgVersion"></span>.</p>
+                    <p class="textCenter">No extensions that match your criteria have been found for Postgres <span class="pgVersion"></span>.</p>
                 </div>
                 <li class="extension extHeader">
                     <span class="name">
                         Name
                     </span>
                     <span class="extInfo">
-                        <span class="version">
-                            Version
-                        </span>
                         <span class="description">
                             Description
+                        </span>
+                        <span class="version">
+                            Version
                         </span>
                     </span>
                 </li>`;
@@ -692,23 +692,6 @@ breadcrumbs: false
                             <span>${ext.name}</span>
                         </label>
                         <span class="extInfo">
-                            <span class="version form-group">
-                                <select
-                                    class="extVersion small"
-                                    onchange="setExtensionVersion('${ext.name}')"
-                                >`;
-                
-                ext.extensionVersions.forEach( (version) => {
-                    extHtml += `
-                        <option value="${version.version}">
-                            ${version.version}
-                        </option>
-                    `;
-                })
-
-                extHtml += `
-                                </select>
-                            </span>
                             <span
                                 class="description hasTooltip"
                                 onclick="toggleExtension('${ext.name}', true)"
@@ -716,6 +699,25 @@ breadcrumbs: false
                                 <p>
                                     ${ext.extensionVersions[0].longDescription}
                                 </p>
+                            </span>
+                            <span class="version form-group">
+                                <select
+                                    class="extVersion small"
+                                    onchange="setExtensionVersion('${ext.name}')"
+                                >
+                                    <option>Default</option>`
+                                ;
+                
+                ext.extensionVersions.forEach( (version) => {
+                    extHtml += `
+                        <option value="${version.version}">
+                            ${version.version}
+                        </option>
+                    `;
+                });
+
+                extHtml += `
+                                </select>
                             </span>
                             <button class="btn plain" onclick="viewExtensionDetails('${ext.name}')">▾</button>
                         </span>
