@@ -1837,9 +1837,6 @@ li.extension.extHeader .name {
 }
 
 li.extension label.name, li.extension .name {
-    /* position: absolute;
-    top: 5px;
-    left: 10px; */
     width: 30%;
     height: 32px;
     text-overflow: ellipsis;
@@ -1867,8 +1864,6 @@ li.extension .extInfo {
 }
 
 li.extension .description p, li.extension select, li.extension .extInfo label {
-    /* font-size: 80%;
-    line-height: 1.2; */
     margin: 0;
 }
 
@@ -1891,10 +1886,6 @@ li.extension .description p {
 li.extension hr {
     margin: 10px 0;
 }
-
-/* li.extension p.description:first-letter {
-    text-transform: uppercase;
-} */
 
 .no-sidebar #breadcrumbs {
     display: none !important;
@@ -2000,7 +1991,6 @@ button#clearExtensions {
 .sizeBar .size {
     display: block;
     float: left;
-    /* border-right: 1px solid var(--baseLightColor); */
     padding: 5px 0;
     text-align: center;
     font-size: 70%;
@@ -2063,19 +2053,6 @@ button#clearExtensions {
     background-repeat: no-repeat;
 }
 
-/* #imageForm {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid var(--baseLightColor);
-} */
-
-#checkout {
-    /* z-index: 2; */
-    position: sticky;
-    top: 190px;
-    background: var(--bgColor);
-} 
-
 #checkout h3 {
     margin: 6px 0 8px;
     font-size: 1rem;
@@ -2090,7 +2067,6 @@ button#clearExtensions {
 }
 
 #checkout ul {
-    /* margin: 0 0 10px; */
     margin: 0;
     padding-left: 0;
 }
@@ -2290,37 +2266,6 @@ li.extension .extDetails li:before, #imageSummary li:before {
     position: relative;
 }
 
-/* #imageSummary > ul > li:not(:first-child) {
-    border-top: 1px solid var(--baseLightColor);
-    padding-top: 10px;
-} */
-
-/* #imageSummary ul li ul:before {
-    content: " ";
-    width: 1px;
-    height: 100%;
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 7px;
-    background: var(--borderColor);
-}
-
-#imageSummary li {
-    position: relative;
-}
-
-#imageSummary li.architectures ul li:before {
-    content: " ";
-    width: 5px;
-    height: 1px;
-    display: block !important;
-    position: absolute;
-    left: -10px;
-    top: 7px;
-    background: var(--borderColor);
-} */
-
 #imageSummary ul ul:before {
     content: "";
     display: inline;
@@ -2349,7 +2294,7 @@ li.extension .extDetails li:before, #imageSummary li:before {
     display: block;
     width: 5px;
     height: 100%;
-    background: #192e31;
+    background: var(--bgColor);
     position: absolute;
     left: 0;
     top: 12px;
@@ -2362,7 +2307,7 @@ li.extension .extDetails li:before, #imageSummary li:before {
     height: 100%;
     position: absolute;
     left: -13px;
-    background: #192e31;
+    background: var(--bgColor);
     top: 12px;
 }
 
