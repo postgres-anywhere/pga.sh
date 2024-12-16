@@ -784,13 +784,13 @@ body:not(.active) #header nav a:hover {
     margin: 0 8px;
 }
 
-/* #mainMenu a:hover {
-    color: var(--baseLightColor);
-} */
-
 #header .follow a {
     margin-left: 15px;
     color: var(--textColor);
+}
+
+#header .follow a svg {
+    margin-right: 5px;
 }
 
 #header .follow path {
@@ -2352,6 +2352,10 @@ li.extension .extDetails li:before, #imageSummary li:before {
         margin-top: 8px;
         position: relative;
         overflow: visible;
+    }
+
+    #header .follow a svg {
+        margin-right: 0;
     }
 
     #header .follow a svg path {
