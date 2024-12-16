@@ -2379,7 +2379,7 @@ li.extension .extDetails li:before, #imageSummary li:before {
 
 
 @media screen and (max-width: 1400px) {
-    #body {    
+    #body, #custom-footer {    
         max-width: calc(100vw - 300px - 10vw);
     }
 

@@ -41,7 +41,7 @@
     {{ partial "header-menu.html" . }}
     {{ partial "menu.html" . }}
 
-        <section id="body" class="{{ if eq .Params.Sidebar false }} no-sidebar {{ end }}">
+        <section id="body" class="{{ if eq .Params.Sidebar false }}no-sidebar{{ end }}">
           <div id="overlay"></div>
           <div class="{{ if .Param "Sidebar" }} padding {{ end }} highlightable">
                 {{if not .IsHome}}
