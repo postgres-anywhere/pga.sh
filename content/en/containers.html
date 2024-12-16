@@ -653,7 +653,7 @@ breadcrumbs: false
                             <input
                                 type="checkbox"
                                 class="plain enableExtension"
-                                onchange="toggleExtension('${ext.name}')"
+                                onchange="${ ext.extensionVersions.length ? 'toggleExtension(\'' + ext.name + '\')' : ''}"
                                 value='{"name":"${ext.name}"}'
                                 ${defaultExtEnabled.includes(ext.name) ? 'checked' : ''}
                                 ${ !ext.extensionVersions.length ? 'disabled' : ''}
