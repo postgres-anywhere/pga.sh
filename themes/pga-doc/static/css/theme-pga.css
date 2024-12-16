@@ -1836,6 +1836,10 @@ li.extension.extHeader .name {
     padding-left: 28px;
 }
 
+li.extension.extHeader .extInfo span.version {
+    float: left;
+}
+
 li.extension label.name, li.extension .name {
     width: 30%;
     height: 32px;
@@ -1845,6 +1849,10 @@ li.extension label.name, li.extension .name {
     display: inline-block;
     margin: 0;
 }
+
+li.extension.extHeader span {
+    cursor: initial;
+} 
 
 li.extension label.name span {
     font-weight: normal;
@@ -1869,13 +1877,13 @@ li.extension .description p, li.extension select, li.extension .extInfo label {
 
 li.extension .description {
     padding-left: 10px;
-    width: calc(100% - 95px);
+    width: calc(100% - 90px);
     overflow: hidden;
     cursor: pointer;
 }
 
 li.extension .extInfo span.version, li.extension .extInfo span.version select {
-    width: 75px;
+    width: 70px;
 }
 
 li.extension .description p {

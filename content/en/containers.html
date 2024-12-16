@@ -274,7 +274,7 @@ breadcrumbs: false
         const extVersion = document.querySelector(`li.extension[data-name=${extName}] select.extVersion`);
         const extCheckbox = document.querySelector(`li.extension[data-name=${extName}] input.enableExtension`);
 
-        extCheckbox.value = `{"name":"${extName}"${ (extVersion.value !== 'Default') ? ',"version":"' + extVersion.value + '"' : ''}}`;
+        extCheckbox.value = `{"name":"${extName}"${ (extVersion.selectedIndex !== 0) ? ',"version":"' + extVersion.value + '"' : ''}}`;
         getImageUrl();
     }
 
@@ -636,11 +636,11 @@ breadcrumbs: false
                         Name
                     </span>
                     <span class="extInfo">
-                        <span class="description">
-                            Description
-                        </span>
                         <span class="version">
                             Version
+                        </span>
+                        <span class="description">
+                            Description
                         </span>
                     </span>
                 </li>`;
@@ -656,10 +656,31 @@ breadcrumbs: false
                                 onchange="toggleExtension('${ext.name}')"
                                 value='{"name":"${ext.name}"}'
                                 ${defaultExtEnabled.includes(ext.name) ? 'checked' : ''}
+                                ${ !ext.extensionVersions.length ? 'disabled' : ''}
+                                ${ (ext.extensionVersions.length == 0) ? 'title="This extension is not available for the Postgres version you selected"' : ''}
                             />
                             <span>${ext.name}</span>
                         </label>
                         <span class="extInfo">
+                            <span class="version form-group">
+                                <select
+                                    ${ (ext.extensionVersions.length <= 1) ? 'disabled' : ''}
+                                    ${ (ext.extensionVersions.length == 0) ? 'title="This extension is not available for the Postgres version you selected"' : ''}
+                                    class="extVersion small"
+                                    onchange="setExtensionVersion('${ext.name}')"
+                                >`;
+                
+                ext.extensionVersions.forEach( (version, index) => {
+                    extHtml += `
+                        <option value="${version.version}">
+                            ${version.version}
+                        </option>
+                    `;
+                })
+
+                extHtml += `
+                                </select>
+                            </span>
                             <span
                                 class="description hasTooltip"
                                 onclick="toggleExtension('${ext.name}', true)"
@@ -667,25 +688,6 @@ breadcrumbs: false
                                 <p>
                                     ${ext.extensionVersions[0].longDescription}
                                 </p>
-                            </span>
-                            <span class="version form-group">
-                                <select
-                                    class="extVersion small"
-                                    onchange="setExtensionVersion('${ext.name}')"
-                                >
-                                    <option>Default</option>`
-                                ;
-                
-                ext.extensionVersions.forEach( (version) => {
-                    extHtml += `
-                        <option value="${version.version}">
-                            ${version.version}
-                        </option>
-                    `;
-                });
-
-                extHtml += `
-                                </select>
                             </span>
                             <button class="btn plain" onclick="viewExtensionDetails('${ext.name}')">▾</button>
                         </span>
