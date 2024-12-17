@@ -686,7 +686,7 @@ breadcrumbs: false
                         </span>
                         <span
                             class="description hasTooltip"
-                            onclick="toggleExtension('${ext.name}', true)"
+                            onclick="${ ext.extensionVersions.length ? 'toggleExtension(\'' + ext.name + '\', true)' : ''}"
                         >
                             <p>
                                 ${ext.metadata.longDescription}
