@@ -646,103 +646,138 @@ breadcrumbs: false
                 </li>`;
 
         extData.forEach( (ext, index) => {
-            if(ext.hasOwnProperty('extensionVersions') && ext.extensionVersions.length) {
-                extHtml += `
-                    <li class="extension ${defaultExtEnabled.includes(ext.name) ? 'active' : ''}" data-name="${ext.name}">
-                        <label class="name">
-                            <input
-                                type="checkbox"
-                                class="plain enableExtension"
-                                onchange="${ ext.extensionVersions.length ? 'toggleExtension(\'' + ext.name + '\')' : ''}"
-                                value='{"name":"${ext.name}"}'
-                                ${defaultExtEnabled.includes(ext.name) ? 'checked' : ''}
-                                ${ !ext.extensionVersions.length ? 'disabled' : ''}
+            
+            extHtml += `
+                <li class="extension ${defaultExtEnabled.includes(ext.name) ? 'active' : ''} ${ (ext.extensionVersions.length == 0) ? 'disabled' : ''}" data-name="${ext.name}">
+                    <label class="name">
+                        <input
+                            type="checkbox"
+                            class="plain enableExtension"
+                            onchange="${ ext.extensionVersions.length ? 'toggleExtension(\'' + ext.name + '\')' : ''}"
+                            value='{"name":"${ext.name}"}'
+                            ${defaultExtEnabled.includes(ext.name) ? 'checked' : ''}
+                            ${ !ext.extensionVersions.length ? 'disabled' : ''}
+                            ${ (ext.extensionVersions.length == 0) ? 'title="This extension is not available for the Postgres version you selected"' : ''}
+                        />
+                        <span>${ext.name}</span>
+                    </label>
+                    <span class="extInfo">
+                        <span class="version form-group">
+                            <select
+                                ${ (ext.extensionVersions.length <= 1) ? 'disabled' : ''}
                                 ${ (ext.extensionVersions.length == 0) ? 'title="This extension is not available for the Postgres version you selected"' : ''}
-                            />
-                            <span>${ext.name}</span>
-                        </label>
-                        <span class="extInfo">
-                            <span class="version form-group">
-                                <select
-                                    ${ (ext.extensionVersions.length <= 1) ? 'disabled' : ''}
-                                    ${ (ext.extensionVersions.length == 0) ? 'title="This extension is not available for the Postgres version you selected"' : ''}
-                                    class="extVersion small"
-                                    onchange="setExtensionVersion('${ext.name}')"
-                                >`;
-                
+                                class="extVersion small"
+                                onchange="setExtensionVersion('${ext.name}')"
+                            >`;
+            if(ext.extensionVersions.length) {
                 ext.extensionVersions.forEach( (version, index) => {
                     extHtml += `
                         <option value="${version.version}">
                             ${version.version}
                         </option>
                     `;
-                })
+                });
+            } else {
+                extHtml += `<option>NONE</option>`;
+            }
+
+            extHtml += `
+                            </select>
+                        </span>
+                        <span
+                            class="description hasTooltip"
+                            onclick="${ ext.extensionVersions.length ? 'toggleExtension(\'' + ext.name + '\', true)' : ''}"
+                        >
+                            <p>
+                                ${ext.metadata.longDescription}
+                            </p>
+                        </span>
+                        <button class="btn plain" onclick="viewExtensionDetails('${ext.name}')">▾</button>
+                    </span>
+                    <div class="extDetails">`;
+
+            if(ext.extensionVersions.length) {
+                ext.extensionVersions.forEach( (version) => {
+                    extHtml += `
+                        <ul>
+                            <li>
+                                <strong>– ${version.metadata.longDescription}</strong> <br/>
+                                <ul>
+                                    ${
+                                        version.metadata.licenses.length 
+                                            ? 
+                                                `
+                                                <li>
+                                                    <strong>– Licenses:</strong><br/>
+                                                    <ul>
+                                                        <li>${version.metadata.licenses}</li>
+                                                    </ul>
+                                                </li>
+                                                `
+                                            : ''
+                                    }
+                                    <li>
+                                        <strong>– Platforms:</strong>
+
+                                        <ul>`;
+                            
+                    version.platforms.forEach( (platform) => {
+                        extHtml += '<li>' + platform.os + '/' + platform.architecture + '</li>';
+                    });
+
+                    extHtml += `
+                                        </ul>
+                                    </li>
+
+                                    <li>
+                                        <strong>– Repository:</strong>
+                                        <ul>
+                                            <li>
+                                                <strong>– Tag:</strong> ${version.metadata.repository.tag}<li>
+                                            <li><strong>– URL:</strong> <a href="${version.metadata.repository.url}" target="_blank">${version.metadata.repository.url}</a><li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    `;
+                });
+            } else {
+                extHtml += `
+                    <ul>
+                        <li>
+                            <strong>– ${ext.metadata.longDescription}</strong> <br/>
+
+                            <ul>`;
+                
+                if(ext.metadata.licenses.length) {
+                    extHtml += `
+                                <li>
+                                    <strong>– License:</strong><br/>
+                                    <ul>
+                                        <li>${ext.metadata.licenses}</li>
+                                    </ul>
+                                </li>`;
+                }
 
                 extHtml += `
-                                </select>
-                            </span>
-                            <span
-                                class="description hasTooltip"
-                                onclick="toggleExtension('${ext.name}', true)"
-                            >
-                                <p>
-                                    ${ext.extensionVersions[0].longDescription}
-                                </p>
-                            </span>
-                            <button class="btn plain" onclick="viewExtensionDetails('${ext.name}')">▾</button>
-                        </span>
-                        <div class="extDetails">`;
-
-                            ext.extensionVersions.forEach( (version) => {
-                                extHtml += `
+                                <li>
+                                    <strong>– Repository:</strong>
                                     <ul>
                                         <li>
-                                            <strong>– v${version.version}:</strong> ${version.longDescription}<br/>
-                                            <ul>
-                                                ${
-                                                    version.licenses.length 
-                                                        ? 
-                                                            `
-                                                            <li>
-                                                                <strong>– Licenses:</strong><br/>
-                                                                <ul>
-                                                                    <li>${version.licenses}</li>
-                                                                </ul>
-                                                            </li>
-                                                            `
-                                                        : ''
-                                                }
-                                                <li>
-                                                    <strong>– Platforms:</strong>
-
-                                                    <ul>`;
-                                        
-                                version.platforms.forEach( (platform) => {
-                                    extHtml += '<li>' + platform.os + '/' + platform.architecture + '</li>';
-                                });
-
-                                extHtml += `
-                                                    </ul>
-                                                </li>
-
-                                                <li>
-                                                    <strong>– Repository:</strong>
-                                                    <ul>
-                                                        <li>
-                                                            <strong>– Tag:</strong> ${version.repository.tag}<li>
-                                                        <li><strong>– URL:</strong> <a href="${version.repository.url}" target="_blank">${version.repository.url}</a><li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                        </li>
+                                            <strong>– Tag:</strong> ${ext.metadata.repository.tag}<li>
+                                        <li><strong>– URL:</strong> <a href="${ext.metadata.repository.url}" target="_blank">${ext.metadata.repository.url}</a><li>
                                     </ul>
-                                `;
-                            });
-                        extHtml += `  
-                        </div>
-                    </li>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 `;
             }
+                extHtml += `  
+                </div>
+            </li>
+            `;
         })
 
         // Remove previous extensions container if exists 
