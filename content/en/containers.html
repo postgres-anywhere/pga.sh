@@ -748,13 +748,19 @@ breadcrumbs: false
                         <li>
                             <strong>– ${ext.metadata.longDescription}</strong> <br/>
 
-                            <ul>
+                            <ul>`;
+                
+                if(ext.metadata.licenses.length) {
+                    extHtml += `
                                 <li>
                                     <strong>– License:</strong><br/>
                                     <ul>
                                         <li>${ext.metadata.licenses}</li>
                                     </ul>
-                                </li>
+                                </li>`;
+                }
+
+                extHtml += `
                                 <li>
                                     <strong>– Repository:</strong>
                                     <ul>
