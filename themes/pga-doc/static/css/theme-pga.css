@@ -2603,7 +2603,12 @@ li.extension .extDetails li:before, #imageSummary li:before {
     }
 
     #mobileLogo {
-        margin-left: calc(5vw + 15px);
+        margin-left: 10px;
+    }
+
+    #mobileLogo svg {
+        transform: scale(0.5);
+        top: 18px;
     }
 
     h1:not(.postTitle), .h1 {
@@ -2668,7 +2673,7 @@ li.extension .extDetails li:before, #imageSummary li:before {
     #showSidebar {
         float: right;
         margin-right: calc(5vw + 1rem);
-        margin-top: 5px;
+        margin-top: 30px;
     }
 
     #sidebar-toggle-span, .ps-container>.ps-scrollbar-y-rail, .ps-container>.ps-scrollbar-x-rail, .ps-container>.ps-scrollbar-y-rail>.ps-scrollbar-y, .ps-container>.ps-scrollbar-x-rail>.ps-scrollbar-x {
