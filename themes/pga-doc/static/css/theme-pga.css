@@ -1739,7 +1739,7 @@ input[type="email"], input[type="text"], select {
 .form-group select, .form-group label.radioLabel, .form-group input[type="text"] {
     padding: 10px;
     background: rgba(255, 255, 255, .1);
-    border: 1px solid var(--baseLightColor);
+    border: 1px solid var(--borderColor);
     color: var(--textColor);
     border-radius: 3px;
     height: 45px;
@@ -1811,16 +1811,34 @@ li.extension::before {
 ul.extensionsList {
     padding-left: 0;
     margin-bottom: 15px;
+    margin-top: 12px;
 }
 
 li.extension {
-    border: 1px solid var(--baseLightColor);
+    border: 1px solid var(--borderColor);
     padding: 5px 10px 0;
     border-radius: 0;
     background: rgba(255, 255, 255, .1);
     display: inline-block;
     width: 100%;
     margin-bottom: -1px;
+}
+
+ul.extensionsList.available li.extension.disabled, ul.extensionsList:not(.available) li.extension:not(.disabled):not(.extHeader) {
+    display: none;
+}
+
+ul.extensionsList:not(.available) li.extension.disabled {
+    display: inline-block;
+}
+
+#showExtensions {
+    margin: 0;
+    position: relative;
+    top: 5px;
+    margin-bottom: -8px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 li.extension.active {
@@ -1952,6 +1970,7 @@ li.extension select.extVersion {
     width: 60px;
     position: relative;
     top: -10px;
+    border-color: var(--baseLightColor);
 }
 
 li.extension .extInfo > * {
@@ -1994,6 +2013,7 @@ button#clearExtensions {
     position: sticky;
     top: 90px;
     background: var(--bgColor);
+    padding-top: 15px;
     padding-bottom: 15px;
     margin-bottom: 20px;
     border-bottom: 1px solid var(--baseLightColor);
@@ -2069,6 +2089,11 @@ button#clearExtensions {
     background-size: 12px;
     background-position: center 3px;
     background-repeat: no-repeat;
+}
+
+#checkout > fieldset {
+    background: var(--baseColor);
+    border-color: var(--baseLightColor);
 }
 
 #checkout h3 {
@@ -2275,8 +2300,7 @@ li.extension .extDetails li:before, #imageSummary li:before {
 #imageSummary {
     padding: 10px;
     border-radius: 3px;
-    max-height: calc(100vh - 320px);
-    overflow: auto;
+    /* max-height: calc(100vh - 320px); */
     width: 100%;
 }
 
@@ -2289,7 +2313,7 @@ li.extension .extDetails li:before, #imageSummary li:before {
     display: inline;
     height: 100%;
     width: 1px;
-    background: var(--borderColor);
+    background: var(--textColor);
     position: absolute;
     top: 0;
     left: 2px;
@@ -2301,7 +2325,7 @@ li.extension .extDetails li:before, #imageSummary li:before {
     height: 1px;
     width: 6px;
     position: absolute;
-    background: var(--borderColor);
+    background: var(--textColor);
     border-radius: 0;
     left: -12px;
     top: 11px;
@@ -2312,7 +2336,7 @@ li.extension .extDetails li:before, #imageSummary li:before {
     display: block;
     width: 5px;
     height: 100%;
-    background: var(--bgColor);
+    background: var(--baseColor);
     position: absolute;
     left: 0;
     top: 12px;
@@ -2325,7 +2349,7 @@ li.extension .extDetails li:before, #imageSummary li:before {
     height: 100%;
     position: absolute;
     left: -13px;
-    background: var(--bgColor);
+    background: var(--baseColor);
     top: 12px;
 }
 
