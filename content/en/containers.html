@@ -16,6 +16,7 @@ breadcrumbs: false
                                 id="imageUrl"
                                 data-url="42.pga.sh/postgres"
                                 data-urlDigest=""
+                                data-shareUrl=""
                             >docker pull 42.pga.sh/postgres</code>
                         </pre>
                     </div>
@@ -162,7 +163,7 @@ breadcrumbs: false
                                                 Patroni Version
                                             </label>
                                             <select
-                                                name="patroni-version"
+                                                name="patroniVersion"
                                                 id="patroniVersion"
                                                 class="noMargin"
                                                 onchange="getImageUrl()"
@@ -206,6 +207,12 @@ breadcrumbs: false
                                     Image Details
                                 </h3>
                                 <div id="imageSummary"></div>
+                                <a class="btn fullWidth" onclick="getShareUrl();">
+                                    <strong class="uppercase">
+                                        Share This Image
+                                    </strong>
+                                </a>
+                                <input id="shareUrl" class="hidden"/>
                             </fieldset>
                         </div>
                     </div>
@@ -214,8 +221,8 @@ breadcrumbs: false
             </div>
     </div>
 </section>
-<div id="extensionsPopup" class="hidden popUp">
-    <div class="overlay" onclick="toggleExtensionsPopup()"></div>
+<div id="popUp" class="hidden popUp">
+    <div class="overlay" onclick="togglePopup()"></div>
     <div class="info"></div>
 </div>
 
@@ -259,13 +266,17 @@ breadcrumbs: false
     // Toggle extension selection
     function toggleExtension(extName, force = false) {
         const ext = document.querySelector(`li.extension[data-name=${extName}]`);
+        const extCheckbox = document.querySelector(`li.extension[data-name=${extName}] input.enableExtension`);
 
         if(force) {
-            const extCheckbox = document.querySelector(`li.extension[data-name=${extName}] input.enableExtension`);
             extCheckbox.checked = !extCheckbox.checked;
         }
 
-        ext.classList.toggle('active');
+        if(extCheckbox.checked) {
+            ext.classList.add('active');
+        } else {
+            ext.classList.remove('active');
+        }
         getImageUrl();
     }
 
@@ -273,9 +284,13 @@ breadcrumbs: false
     function setExtensionVersion(extName) {
         const extVersion = document.querySelector(`li.extension[data-name=${extName}] select.extVersion`);
         const extCheckbox = document.querySelector(`li.extension[data-name=${extName}] input.enableExtension`);
+        const prevValue = extCheckbox.value;
 
         extCheckbox.value = `{"name":"${extName}"${ (extVersion.selectedIndex !== 0) ? ',"version":"' + extVersion.value + '"' : ''}}`;
-        getImageUrl();
+
+        if(extCheckbox.checked) {
+            getImageUrl();
+        }
     }
 
     // Update command with cached data
@@ -304,8 +319,10 @@ breadcrumbs: false
         
         // Check postgres version
         const postgresVersion = document.getElementById('version');
+        
         let flavorVersions = [{}];
-        if( (postgresVersion.options.length > 1) && !postgresVersion.options[postgresVersion.selectedIndex].text.startsWith('latest')) {
+
+        if( postgresVersion && (postgresVersion.options.length > 1) && !postgresVersion.options[postgresVersion.selectedIndex].text.startsWith('latest')) {
             flavorVersions[0]['majorVersion'] = postgresVersion.value.split('.')[0];
             flavorVersions[0]['minorVersion'] = postgresVersion.value.split('.')[1];
         }
@@ -324,6 +341,26 @@ breadcrumbs: false
 
         // Check addons
         const patroni = document.querySelector('input[name="patroni"]:checked');
+        const imageObject = {
+            'tshirtSize': tShirtSize,
+            'flavor': {
+                'name': flavor,
+                ...( (flavorVersions.length || extensions.length) && {
+                    'versions': flavorVersions
+                }),
+            },
+            ...( (patroni.value === 'enable') && {
+                'addons': [
+                    {
+                        'name': 'patroni',
+                        ...( (patroniVersions.selectedIndex !== -1) && !patroniVersions.options[patroniVersions.selectedIndex].text.startsWith('latest') && {
+                            version: patroniVersions.value
+                        })
+                    }
+                ]
+            })
+            
+        };
 
         fetch('https://42.pga.sh/api/pga/v1/image-url', {
             method: 'POST',
@@ -331,26 +368,7 @@ breadcrumbs: false
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                'tshirtSize': tShirtSize,
-                'flavor': {
-                    'name': flavor,
-                    ...( (flavorVersions.length || extensions.length) && {
-                        'versions': flavorVersions
-                    }),
-                },
-                ...( (patroni.value === 'enable') && {
-                    'addons': [
-                        {
-                            'name': 'patroni',
-                            ...( !patroniVersions.options[patroniVersions.selectedIndex].text.startsWith('latest') && {
-                                version: patroniVersions.value
-                            })
-                        }
-                    ]
-                })
-                
-            })
+            body: JSON.stringify(imageObject)
         })
         .then(response => response.json())
         .then( (data) => {
@@ -367,7 +385,7 @@ breadcrumbs: false
             }
 
             imageUrl.dataset.url = data.image.url;
-            imageUrl.dataset.urlDigest = data.image.urlDigest                    
+            imageUrl.dataset.urlDigest = data.image.urlDigest;
             updateCommand();
             
             const imageSummary = document.querySelector('#imageSummary');
@@ -555,11 +573,13 @@ breadcrumbs: false
             platformContainer.appendChild(input);
         })
     )
-    .then(
-        getImageUrl()
-    ).then( () => {
+    .then( () => {
+        getImageUrl();
+    }).then( () => {
         getVersions();
         getAddons();
+    }).then( () => {
+        parseShareUrl();
     });
 
     /*optionsGetters.forEach( (getter) => {
@@ -619,6 +639,172 @@ breadcrumbs: false
         return defaultExtEnabled
     }
 
+    // Check if a given <option> exists in the specified selectId
+    function optionExists(selectId, optionValue) {
+        const select = document.getElementById(selectId);
+        return select && [...select.options].some(option => option.value === optionValue);
+    }
+
+    function getShareUrl() {
+        let shareUrl = document.location.href.replace(document.location.search, '?');
+
+        const command = document.querySelector('[name="command"]:checked');
+        shareUrl += 'command=' + command.getAttribute('id').replace('command-', '');
+
+        const image = document.querySelector('[name="image"]:checked');
+        shareUrl += '&image=' + image.value;
+
+        const postgresVersion = document.getElementById('version');
+        shareUrl += '&version=' + postgresVersion.value;
+
+        const patroni = document.querySelector('[name="patroni"]:checked');
+        shareUrl += '&patroni=' + patroni.value;
+
+        if(patroni !== null) {
+            const patroniVersion = document.getElementById('patroniVersion');
+            shareUrl += '&patroniVersion=' + patroniVersion.value;
+        }
+
+        const selectedExtensions = document.querySelectorAll('li.extension input.enableExtension:checked');
+        if(selectedExtensions.length) {
+            shareUrl += '&extensions=';
+            
+            selectedExtensions.forEach( (ext) => {
+                let extObj = JSON.parse(ext.value);
+                shareUrl += extObj.name;
+
+                if(extObj.hasOwnProperty('version')) {
+                    shareUrl += '--' + extObj.version;
+                }
+
+                shareUrl += ',';
+            });
+        }
+
+        // Get the text field
+        const copyText = document.getElementById("shareUrl");
+
+        copyText.value = shareUrl;
+
+        // Select the text field
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copy the text inside the text field
+        navigator.clipboard.writeText(copyText.value);
+
+        alert("The URL to share this image specs has been successfully copied to your clipboard.")
+    }
+
+    function parseShareUrl(url) {
+        let urlParams = (new URL(document.location)).searchParams;
+        
+        // Set TOGGLE inputs
+        ['command','image','patroni'].forEach( (id) => {
+            if(urlParams.get(id) !== null) {
+                let parentInput = document.querySelector(`[name="${id}"]`);
+                let input = document.querySelector(`#${id}-${urlParams.get(id)}`);
+                
+                if(parentInput && input && (parentInput.value !== input.value)) {
+                    input.setAttribute('checked', true);
+                    input.dispatchEvent(new Event('change'));
+                }
+            }
+        });
+        
+        // Set SELECT inputs
+        ['version','patroniVersion'].forEach( (id) => {
+            if(urlParams.get(id) !== null) {
+                let select = document.querySelector(`[name="${id}"]`);
+            
+                if(select) {
+                    let intervalCount = 0;
+
+                    // Check for 5sec if the selected option is available and set it. If not, raise an alert
+                    const udpatedSelect = setInterval( () => {
+                        intervalCount++;
+                        if (
+                            (intervalCount <= 50) &&
+                            (select.length > 1) &&
+                            optionExists(id, urlParams.get(id))
+                        ) {
+                            select.value = urlParams.get(id);
+                            select.dispatchEvent(new Event('change'));
+                            clearInterval(udpatedSelect);
+                        } else if (
+                            (select.length > 1) && (
+                                (intervalCount > 50) ||
+                                !optionExists(id, urlParams.get(id))
+                            )
+                        ) {
+                            alert(`The value you requested for "${id}" could not be found.`)
+                            clearInterval(udpatedSelect);
+                        }
+                    },100);
+                }
+            }
+        });
+
+        setExtensionsFromUrl();
+        getImageUrl();
+    }
+
+    function setExtensionsFromUrl() {
+        let urlParams = (new URL(document.location)).searchParams;
+        
+        // Set extensions
+        const extensionsValue = urlParams.get('extensions');
+        if(extensionsValue !== null) {
+            let unavailableExtensions = [];
+
+            extensionsValue.split(',').forEach( (ext, index) => {
+                let intervalCount = 0;
+                var extVersionValue = '';
+
+                const setExtension = setInterval( () => {
+                    intervalCount++;
+
+                    if(ext.includes('--')) {
+                        const extDetails = ext.split('--');
+                        ext = extDetails[0];
+                        extVersionValue = extDetails[1];   
+                    }
+
+                    let extToggle = document.querySelector(`[name="ext-${ext}"]:not([disabled])`);
+                    
+                    if (
+                        (intervalCount <= 10) &&
+                        (extToggle !== null)
+                    ) {
+                        extToggle.checked = true;
+                        extToggle.dispatchEvent(new Event('change'));
+                        document.querySelector(`li.extension[data-name="${ext}"]`).classList.add('active');
+
+                        if(extVersionValue.length) {
+                            let extVersion = document.querySelector(`#extVersion-${ext}:not([disabled]`);
+
+                            if( optionExists(`extVersion-${ext}`, extVersionValue) ) {
+                                extVersion.value = extVersionValue;
+                                extVersion.dispatchEvent(new Event('change'));
+                            }
+                        }
+                        clearInterval(setExtension);
+                    } else if (intervalCount > 10) {
+                        unavailableExtensions.push(extVersionValue.length ? `${ext} v${extVersionValue}` : ext);
+                        clearInterval(setExtension);
+                    }
+                },100);
+                
+            });
+
+            if(unavailableExtensions.length) {
+                alert(`The following extensions could not be found: ${unavailableExtensions.join(', ')}`)
+            } 
+
+            getImageUrl();
+        }
+    }
+
     function parseExtensionsData(version, extData = null) {
 
         if(!extData && extensionsList.hasOwnProperty(version)) {
@@ -652,6 +838,7 @@ breadcrumbs: false
                     <label class="name">
                         <input
                             type="checkbox"
+                            name="ext-${ext.name}"
                             class="plain enableExtension"
                             onchange="${ ext.extensionVersions.length ? 'toggleExtension(\'' + ext.name + '\')' : ''}"
                             value='{"name":"${ext.name}"}'
@@ -664,6 +851,7 @@ breadcrumbs: false
                     <span class="extInfo">
                         <span class="version form-group">
                             <select
+                                id="extVersion-${ext.name}"
                                 ${ (ext.extensionVersions.length <= 1) ? 'disabled' : ''}
                                 ${ (ext.extensionVersions.length == 0) ? 'title="This extension is not available for the Postgres version you selected"' : ''}
                                 class="extVersion small"
@@ -796,6 +984,7 @@ breadcrumbs: false
         const extensions = document.querySelector('#extensions');
         extensions.classList.remove('hidden');
 
+        setExtensionsFromUrl();
         filterExtensions();
     }
 
@@ -868,15 +1057,15 @@ breadcrumbs: false
         event.preventDefault();
     });
 
-    const extensionsPopup = document.querySelector('#extensionsPopup');
     function viewExtensionDetails(extName) {
         const extContainer = document.querySelector(`li.extension[data-name="${extName}"]`)
 
         extContainer.classList.toggle('open');
     } 
 
-    function toggleExtensionsPopup() {
-        extensionsPopup.classList.toggle('hidden');
+    function togglePopup() {
+        const popUp = document.querySelector('#popUp');
+        popUp.classList.toggle('hidden');
     }
 
     function isDefaultExtValueEnabled(extName) {
