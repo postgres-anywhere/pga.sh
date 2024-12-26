@@ -7,9 +7,9 @@ breadcrumbs: false
 
 <section id="containers">
     <div class="row">
-        <div class="col-sm-10 marginAuto">
+        <div class="col-sm-12 marginAuto">
             <div class="row align-items-start">
-                <div id="imageDetails" class="col-sm-12 align-items-start">
+                <div id="imageDetails" class="col-sm-12 marginAuto align-items-start">
                     <div class="col-sm-12">
                         <pre class="copyCode fullWidth">
                             <code
@@ -21,65 +21,66 @@ breadcrumbs: false
                         </pre>
                     </div>
                     <div class="col-sm-12 textCenter inlineItems">
-                            <div class="col inlineItems">
-                                <label>
-                                    Command
+                        <br/>
+                        <div class="col inlineItems">
+                            <label>
+                                Command
+                            </label>
+                            <div class="form-group switch row">
+                                <label class="monospaced small">
+                                    <input
+                                        type="radio"
+                                        name="command"
+                                        id="command-pull"
+                                        value="docker pull $imageURL"
+                                        checked
+                                        onchange="updateCommand()"
+                                    />
+                                    <span>pull</span>
                                 </label>
-                                <div class="form-group switch row">
-                                    <label class="monospaced small">
-                                        <input
-                                            type="radio"
-                                            name="command"
-                                            id="command-pull"
-                                            value="docker pull $imageURL"
-                                            checked
-                                            onchange="updateCommand()"
-                                        />
-                                        <span>pull</span>
-                                    </label>
-                                    <label class="monospaced small">
-                                        <input
-                                            type="radio"
-                                            name="command"
-                                            id="command-run"
-                                            value="docker run --rm --name pg -d -e POSTGRES_PASSWORD=pwd $imageURL
-        
-            docker exec -it pg psql postgres postgres"
-                                            onchange="updateCommand()"
-                                        />
-                                        <span>run</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col inlineItems">
-                                <label>
-                                    Image
+                                <label class="monospaced small">
+                                    <input
+                                        type="radio"
+                                        name="command"
+                                        id="command-run"
+                                        value="docker run --rm --name pg -d -e POSTGRES_PASSWORD=pwd $imageURL
+    
+        docker exec -it pg psql postgres postgres"
+                                        onchange="updateCommand()"
+                                    />
+                                    <span>run</span>
                                 </label>
-                                <div class="form-group switch row">
-                                    <label class="monospaced small">
-                                        <input
-                                            type="radio"
-                                            name="image"
-                                            id="image-canonical"
-                                            value="canonical"
-                                            checked
-                                            onchange="updateCommand()"
-                                        />
-                                        <span>canonical</span>
-                                    </label>
-                                    <label class="monospaced small">
-                                        <input
-                                            type="radio"
-                                            name="image"
-                                            id="image-digest"
-                                            value="digest"
-                                            onchange="updateCommand()"
-                                        />
-                                        <span>digest</span>
-                                    </label>
-                                </div>
                             </div>
                         </div>
+                        <div class="col inlineItems">
+                            <label>
+                                Image
+                            </label>
+                            <div class="form-group switch row">
+                                <label class="monospaced small">
+                                    <input
+                                        type="radio"
+                                        name="image"
+                                        id="image-canonical"
+                                        value="canonical"
+                                        checked
+                                        onchange="updateCommand()"
+                                    />
+                                    <span>canonical</span>
+                                </label>
+                                <label class="monospaced small">
+                                    <input
+                                        type="radio"
+                                        name="image"
+                                        id="image-digest"
+                                        value="digest"
+                                        onchange="updateCommand()"
+                                    />
+                                    <span>digest</span>
+                                </label>
+                            </div>
+                        </div>
+                        <br/><br/>
                     </div>
                 </div>
                 <div class="col-sm-12">
