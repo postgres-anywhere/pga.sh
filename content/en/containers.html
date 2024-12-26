@@ -184,6 +184,23 @@ breadcrumbs: false
                                         Extensions
                                         <span class="helpTooltip" title="Add as many extensions as you want for your Postgres image. Note that all extensions are specifically compiled against the Postgres major and minor version selected. Some extensions may have more than one available version."></span>
                                     </label>
+                                   
+                                    <div id="showExtensions" class="form-group switch row">
+                                        <label class="monospaced small">
+                                            <input type="radio" name="availableExtensions" id="availableExtensions" value="available" checked onchange="toggleAvailableExtensions()">
+                                            <span>
+                                                Available
+                                                <span class="availableCount"></span>
+                                            </span>
+                                        </label>
+                                        <label class="monospaced small">
+                                            <input type="radio" name="availableExtensions" id="unavailableExtensions" value="unavailable" onchange="toggleAvailableExtensions()">
+                                            <span>
+                                                Unavailable
+                                                <span class="unavailableCount"></span>
+                                            </span>
+                                        </label>
+                                    </div>
                                 </div>
                                 <div id="extensionsList">
                                     <div class="fields">
@@ -806,6 +823,11 @@ breadcrumbs: false
         }
     }
 
+    function toggleAvailableExtensions() {
+        const extensionsList = document.querySelector('ul.extensionsList');
+        extensionsList.classList.toggle('available');
+    }
+
     function parseExtensionsData(version, extData = null) {
 
         if(!extData && extensionsList.hasOwnProperty(version)) {
@@ -979,8 +1001,23 @@ breadcrumbs: false
         extTemplate.innerHTML = extHtml;
         extTemplate.classList.add('extensionsList');
 
+        // Check if available/unavailable extensions toggle is active
+        const availableExtensions = document.querySelector('[name="availableExtensions"]:checked');
+        if(availableExtensions.value === 'available') {
+            extTemplate.classList.add('available');
+        } else {
+            availableExtensions.classList.remove('available');
+        }
+
         const extList = document.querySelector('#extensions .fields');
         extList.appendChild(extTemplate);
+        
+        const availableCount = document.querySelector('span.availableCount');
+        availableCount.innerHTML = '(' + document.querySelectorAll('li.extension:not(.disabled):not(.extheader)').length + ')';
+
+        const unavailableExtensions = document.querySelectorAll('li.extension.disabled');
+        const unavailableCount = document.querySelector('span.unavailableCount');
+        unavailableCount.innerHTML = '(' + unavailableExtensions.length + ')';
         
         const extensions = document.querySelector('#extensions');
         extensions.classList.remove('hidden');

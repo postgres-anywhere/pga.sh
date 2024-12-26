@@ -1811,6 +1811,7 @@ li.extension::before {
 ul.extensionsList {
     padding-left: 0;
     margin-bottom: 15px;
+    margin-top: 12px;
 }
 
 li.extension {
@@ -1821,6 +1822,23 @@ li.extension {
     display: inline-block;
     width: 100%;
     margin-bottom: -1px;
+}
+
+ul.extensionsList.available li.extension.disabled, ul.extensionsList:not(.available) li.extension:not(.disabled):not(.extHeader) {
+    display: none;
+}
+
+ul.extensionsList:not(.available) li.extension.disabled {
+    display: inline-block;
+}
+
+#showExtensions {
+    margin: 0;
+    position: relative;
+    top: 5px;
+    margin-bottom: -8px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 li.extension.active {
