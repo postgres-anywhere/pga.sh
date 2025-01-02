@@ -10,7 +10,7 @@ breadcrumbs: false
         <div class="col-sm-12 marginAuto">
             <div class="row align-items-start">
                 <div id="imageDetails" class="col-sm-12 marginAuto align-items-start">
-                    <div class="col-sm-12">
+                    <div class="col-sm-10 offset-md-1">
                         <pre class="copyCode fullWidth">
                             <code
                                 id="imageUrl"
@@ -21,7 +21,6 @@ breadcrumbs: false
                         </pre>
                     </div>
                     <div class="col-sm-12 textCenter inlineItems">
-                        <br/>
                         <div class="col inlineItems">
                             <label>
                                 Command
@@ -555,7 +554,7 @@ breadcrumbs: false
 
                 patroni.versions.forEach( (version, index) => {
                     patroniVersionHtml += `
-                        <option>
+                        <option value=${version.version}>
                             ${version.version}
                         </option>
                     `;
@@ -664,7 +663,7 @@ breadcrumbs: false
     }
 
     function getShareUrl() {
-        let shareUrl = document.location.href.replace(document.location.search, '?');
+        let shareUrl = document.location.origin + document.location.pathname + '?';
 
         const command = document.querySelector('[name="command"]:checked');
         shareUrl += 'command=' + command.getAttribute('id').replace('command-', '');
@@ -758,7 +757,7 @@ breadcrumbs: false
                             alert(`The value you requested for "${id}" could not be found.`)
                             clearInterval(udpatedSelect);
                         }
-                    },100);
+                    },1000);
                 }
             }
         });
