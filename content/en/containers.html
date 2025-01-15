@@ -902,7 +902,7 @@ breadcrumbs: false
                                 ${ext.metadata.longDescription}
                             </p>
                         </span>
-                        <button class="btn plain" onclick="viewExtensionDetails('${ext.name}')">▾</button>
+                        <button class="btn plain viewExtensionDetails" onclick="viewExtensionDetails('${ext.name}')">▾</button>
                     </span>
                     <div class="extDetails">`;
 
@@ -1077,6 +1077,12 @@ breadcrumbs: false
             noExtensions.classList.add('hidden');
             extHeader.classList.remove('hidden');
         }
+
+        const availableCount = document.querySelector('span.availableCount');
+        availableCount.innerHTML = `(${document.querySelectorAll('li.extension:not(.disabled):not(.hidden)').length})`;
+
+        const unavailableCount = document.querySelector('span.unavailableCount');
+        unavailableCount.innerHTML = `(${document.querySelectorAll('li.extension.disabled:not(.hidden)').length})`;
     }
 
     function clearExtFilter() {
