@@ -1964,7 +1964,7 @@ input.enableExtension:checked:before {
 }
 
 li.extension select.extVersion {
-    height: 30px;
+    height: 29px;
     padding: 5px;
     margin-bottom: 0;
     width: 60px;
