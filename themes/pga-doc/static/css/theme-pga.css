@@ -2297,6 +2297,10 @@ li.extension .extDetails li:before, #imageSummary li:before {
     display: none !important;
 }
 
+li.extension button.viewExtensionDetails {
+    font-size: 16px !important;
+}
+
 #imageSummary {
     padding: 10px;
     border-radius: 3px;
