@@ -1077,13 +1077,13 @@ breadcrumbs: false
         }
 
         const availableCount = document.querySelector('span.availableCount');
-        availableCount.innerHTML = `(${document.querySelectorAll('li.extension:not(.disabled):not(.hidden)').length})`;
+        availableCount.innerHTML = `(${document.querySelectorAll('li.extension:not(.extHeader):not(.disabled):not(.hidden)').length})`;
 
         const unavailableCount = document.querySelector('span.unavailableCount');
         unavailableCount.innerHTML = `(${document.querySelectorAll('li.extension.disabled:not(.hidden)').length})`;
 
         const extensionsCount = document.querySelector('span.extensionsCount');
-        const extCount = document.querySelectorAll('li.extension:not(.disabled):not(.hidden)').length + document.querySelectorAll('li.extension.disabled:not(.hidden)').length;
+        const extCount = document.querySelectorAll('li.extension:not(.extHeader):not(.disabled):not(.hidden)').length + document.querySelectorAll('li.extension.disabled:not(.hidden)').length;
         extensionsCount.innerHTML = '(' + extCount + ')';
     }
 
