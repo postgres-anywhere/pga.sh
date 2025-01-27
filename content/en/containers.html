@@ -33,7 +33,7 @@ breadcrumbs: false
                                         id="command-pull"
                                         value="docker pull $imageURL"
                                         checked
-                                        onchange="updateCommand()"
+                                        onchange="updateCommand();"
                                     />
                                     <span>pull</span>
                                 </label>
@@ -119,7 +119,7 @@ breadcrumbs: false
                                         name="version"
                                         id="version"
                                         class="getExtensions autoWidth noMargin"
-                                        onchange="getExtensions(); getImageUrl();"
+                                        onchange="getExtensions(); getImageUrl(); updateUrl();"
                                         disabled
                                     >
                                         <option disabled>Choose version...</option>
@@ -141,7 +141,7 @@ breadcrumbs: false
                                                     id="patroni-disable"
                                                     value="disable"
                                                     checked
-                                                    onchange="togglePatroniVersions(); getImageUrl()"
+                                                    onchange="togglePatroniVersions(); getImageUrl(); updateUrl();"
                                                 />
                                                 <span>Disable</span>
                                             </label>
@@ -151,7 +151,7 @@ breadcrumbs: false
                                                     name="patroni"
                                                     id="patroni-enable"
                                                     value="enable"
-                                                    onchange="togglePatroniVersions(); getImageUrl()"
+                                                    onchange="togglePatroniVersions(); getImageUrl(); updateUrl();"
                                                 />
                                                 <span>Enable</span>
                                             </label>
@@ -166,7 +166,7 @@ breadcrumbs: false
                                                 name="patroniVersion"
                                                 id="patroniVersion"
                                                 class="noMargin"
-                                                onchange="getImageUrl()"
+                                                onchange="getImageUrl(); updateUrl();"
                                                 disabled
                                             >
                                             </select>
@@ -253,7 +253,8 @@ breadcrumbs: false
     const versionSelector = document.getElementById('version');
     const patroniVersions = document.querySelector('#patroniVersion');
     const patroniVersionsContainer = document.querySelector('.patroniVersionsContainer');
-    const extensionsList = {};            
+    const extensionsList = {};
+    const shareUrl = document.getElementById("shareUrl");
 
     function addOption(selectId, optionValue, optionText, selected = false) {
         // Get the select element
@@ -289,11 +290,38 @@ breadcrumbs: false
             extCheckbox.checked = !extCheckbox.checked;
         }
 
+        const url = (new URL(window.location));
+        const extObj = JSON.parse(extCheckbox.value);
+        const extData = `${extObj.name}${extObj.hasOwnProperty('version')
+            ? ('--' + extObj.version) 
+            : ''}`;
+
         if(extCheckbox.checked) {
             ext.classList.add('active');
+            if(url.searchParams.has('extensions') && !url.searchParams.get('extensions').includes(extData)) {
+                url.searchParams.set(
+                    'extensions',
+                    `${url.searchParams.get('extensions')},${extData}`);
+            } else {
+                url.searchParams.set('extensions', extData);
+            }
         } else {
             ext.classList.remove('active');
+
+            if(url.searchParams.has('extensions') && url.searchParams.get('extensions').includes(extData)) {
+                let extArray = url.searchParams.get('extensions').split(',').filter((e) => e !== extData);
+                console.log(extArray)
+                if(extArray.length) {
+                    url.searchParams.set(
+                        'extensions',
+                        extArray.join()
+                    );
+                } else {
+                    url.searchParams.delete('extensions');
+                }
+            }
         }
+        history.pushState(null, '', url);
         getImageUrl();
     }
 
@@ -321,6 +349,8 @@ breadcrumbs: false
                 ? imageUrl.dataset.url
                 : imageUrl.dataset.urlDigest
         );
+
+        updateUrl();
     }
 
     function getSize(size) {
@@ -591,13 +621,14 @@ breadcrumbs: false
         })
     )
     .then( () => {
-        getImageUrl();
-    }).then( () => {
         getVersions();
         getAddons();
-    }).then( () => {
         parseShareUrl();
+    })
+    .then( () => {
+        getImageUrl();
     });
+
 
     /*optionsGetters.forEach( (getter) => {
         getter.addEventListener("change", (event) => {
@@ -662,63 +693,77 @@ breadcrumbs: false
         return select && [...select.options].some(option => option.value === optionValue);
     }
 
-    function getShareUrl() {
-        let shareUrl = document.location.origin + document.location.pathname + '?';
-
-        const command = document.querySelector('[name="command"]:checked');
-        shareUrl += 'command=' + command.getAttribute('id').replace('command-', '');
-
-        const image = document.querySelector('[name="image"]:checked');
-        shareUrl += '&image=' + image.value;
-
-        const postgresVersion = document.getElementById('version');
-        shareUrl += '&version=' + postgresVersion.value;
-
-        const patroni = document.querySelector('[name="patroni"]:checked');
-        shareUrl += '&patroni=' + patroni.value;
-
-        if(patroni !== null) {
-            const patroniVersion = document.getElementById('patroniVersion');
-            shareUrl += '&patroniVersion=' + patroniVersion.value;
-        }
-
-        const selectedExtensions = document.querySelectorAll('li.extension input.enableExtension:checked');
-        if(selectedExtensions.length) {
-            shareUrl += '&extensions=';
-            
-            selectedExtensions.forEach( (ext) => {
-                let extObj = JSON.parse(ext.value);
-                shareUrl += extObj.name;
-
-                if(extObj.hasOwnProperty('version')) {
-                    shareUrl += '--' + extObj.version;
+    function updateUrl(version = 0) {
+        if ('URLSearchParams' in window) {
+            let defaultVersions = [
+                {
+                    command: 'command-pull',
+                    image: 'canonical',
+                    patroni: 'disable'
                 }
+            ]
 
-                shareUrl += ',';
-            });
+            const url = new URL(window.location);
+        
+            const command = document.querySelector('[name="command"]:checked');
+            if(command.getAttribute('id') !== defaultVersions[version].command) {
+                url.searchParams.set('command', command.getAttribute('id').replace('command-', ''));
+            } else {
+                url.searchParams.delete('command');
+            }
+
+            const image = document.querySelector('[name="image"]:checked');
+            if (image.value !== defaultVersions[version].image) {
+                url.searchParams.set('image', image.value);
+            } else {
+                url.searchParams.delete('image');
+            }
+
+            const postgresVersion = document.querySelector('#version:not([disabled])');
+            if(postgresVersion && (postgresVersion.length > 1)) {
+                if(postgresVersion.selectedIndex !== 1) {
+                    url.searchParams.set('version', postgresVersion.value);
+                } else {
+                    url.searchParams.delete('version');
+                }
+            }
+
+            const patroni = document.querySelector('[name="patroni"]:checked');
+            if(patroni.value !== defaultVersions[version].patroni) {
+                url.searchParams.set('patroni', patroni.value);
+            
+                const patroniVersion = document.querySelector('#patroniVersion:not([disabled])');
+                if( (patroniVersion.selectedIndex !== 1) && (patroniVersion.length > 1) ) {
+                    url.searchParams.set('patroniVersion', patroniVersion.value);
+                } else {
+                    url.searchParams.delete('patroniVersion');
+                }
+            } else {
+                url.searchParams.delete('patroni');
+                url.searchParams.delete('patroniVersion');
+            }
+            history.pushState(null, '', url);
         }
+    }
 
-        // Get the text field
-        const copyText = document.getElementById("shareUrl");
-
-        copyText.value = shareUrl;
-
+    function getShareUrl() {
         // Select the text field
-        copyText.select();
-        copyText.setSelectionRange(0, 99999); // For mobile devices
+        shareUrl.value = document.location.href;
+        shareUrl.select();
+        shareUrl.setSelectionRange(0, 99999); // For mobile devices
 
         // Copy the text inside the text field
-        navigator.clipboard.writeText(copyText.value);
+        navigator.clipboard.writeText(shareUrl.value);
 
         alert("The URL to share this image specs has been successfully copied to your clipboard.")
     }
 
-    function parseShareUrl(url) {
+    async function parseShareUrl(url) {
         let urlParams = (new URL(document.location)).searchParams;
         
         // Set TOGGLE inputs
         ['command','image','patroni'].forEach( (id) => {
-            if(urlParams.get(id) !== null) {
+            if(urlParams.has(id)) { 
                 let parentInput = document.querySelector(`[name="${id}"]`);
                 let input = document.querySelector(`#${id}-${urlParams.get(id)}`);
                 
@@ -731,7 +776,7 @@ breadcrumbs: false
         
         // Set SELECT inputs
         ['version','patroniVersion'].forEach( (id) => {
-            if(urlParams.get(id) !== null) {
+            if(urlParams.has(id)) {
                 let select = document.querySelector(`[name="${id}"]`);
             
                 if(select) {
@@ -761,20 +806,17 @@ breadcrumbs: false
                 }
             }
         });
-
-        setExtensionsFromUrl();
-        getImageUrl();
     }
 
     function setExtensionsFromUrl() {
-        let urlParams = (new URL(document.location)).searchParams;
-        
+        const urlParams = (new URL(document.location)).searchParams;
+    
         // Set extensions
-        const extensionsValue = urlParams.get('extensions');
-        if(extensionsValue !== null) {
+        if(urlParams.has('extensions') && urlParams.get('extensions').length) {
             let unavailableExtensions = [];
+            const extensions = urlParams.get('extensions').split(',');
 
-            extensionsValue.split(',').forEach( (ext, index) => {
+            extensions.forEach( (ext, index) => {
                 let intervalCount = 0;
                 var extVersionValue = '';
 
@@ -794,7 +836,6 @@ breadcrumbs: false
                         (extToggle !== null)
                     ) {
                         extToggle.checked = true;
-                        extToggle.dispatchEvent(new Event('change'));
                         document.querySelector(`li.extension[data-name="${ext}"]`).classList.add('active');
 
                         if(extVersionValue.length) {
@@ -802,8 +843,11 @@ breadcrumbs: false
 
                             if( optionExists(`extVersion-${ext}`, extVersionValue) ) {
                                 extVersion.value = extVersionValue;
-                                extVersion.dispatchEvent(new Event('change'));
+                                extToggle.value = `{"name":"${ext}","version":"${extVersionValue}"}`;
                             }
+                        }
+                        if( (index + 1) === extensions.length) {
+                            getImageUrl();
                         }
                         clearInterval(setExtension);
                     } else if (intervalCount > 10) {
@@ -816,9 +860,7 @@ breadcrumbs: false
 
             if(unavailableExtensions.length) {
                 alert(`The following extensions could not be found: ${unavailableExtensions.join(', ')}`)
-            } 
-
-            getImageUrl();
+            }
         }
     }
 
